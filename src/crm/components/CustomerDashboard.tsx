@@ -7,64 +7,105 @@ import Snackbar from "@mui/material/Snackbar";
 import CustomerDataGrid from "./CustomerDataGrid";
 import CustomerEditModal from "./CustomerEditModal";
 
-// User interface (same as in other components)
+/**
+ * User interface definition that matches the structure returned by the USERS API.
+ * This interface represents a complete customer record with all nested objects
+ * including login credentials, personal information, location data, and profile pictures.
+ *
+ * The structure follows the random user API format but is used for our
+ * customer management system with full CRUD operations support.
+ */
 interface User {
+  /** Login credentials and unique identifier */
   login: {
-    uuid: string;
-    username: string;
-    password: string;
+    uuid: string;        // Unique identifier for the user
+    username: string;    // User's login username
+    password: string;    // User's password (should be hashed in production)
   };
+  /** Personal name information with title */
   name: {
-    title: string;
-    first: string;
-    last: string;
+    title: string;       // Title (Mr, Mrs, Ms, Dr, etc.)
+    first: string;       // First name
+    last: string;        // Last name
   };
-  gender: string;
+  /** Gender identification */
+  gender: string;        // Gender (male/female)
+  /** Complete address and location information */
   location: {
+    /** Street address details */
     street: {
-      number: number;
-      name: string;
+      number: number;    // Street number
+      name: string;      // Street name
     };
-    city: string;
-    state: string;
-    country: string;
-    postcode: string;
+    city: string;        // City name
+    state: string;       // State/province
+    country: string;     // Country name
+    postcode: string;    // Postal/ZIP code
+    /** Geographic coordinates */
     coordinates: {
-      latitude: number;
-      longitude: number;
+      latitude: number;  // Latitude coordinate
+      longitude: number; // Longitude coordinate
     };
+    /** Timezone information */
     timezone: {
-      offset: string;
-      description: string;
+      offset: string;          // UTC offset (e.g., "-05:00")
+      description: string;     // Timezone description
     };
   };
-  email: string;
+  /** Contact information */
+  email: string;         // Primary email address
+  /** Date of birth and age information */
   dob: {
-    date: string;
-    age: number;
+    date: string;        // Birth date in ISO format
+    age: number;         // Current age in years
   };
+  /** Registration information */
   registered: {
-    date: string;
-    age: number;
+    date: string;        // Registration date in ISO format
+    age: number;         // Years since registration
   };
-  phone: string;
-  cell: string;
+  /** Phone numbers */
+  phone: string;         // Primary phone number
+  cell: string;          // Mobile/cell phone number
+  /** Profile pictures in different sizes */
   picture: {
-    large: string;
-    medium: string;
-    thumbnail: string;
+    large: string;       // Large profile picture URL
+    medium: string;      // Medium profile picture URL
+    thumbnail: string;   // Thumbnail profile picture URL
   };
-  nat: string;
+  /** Nationality code */
+  nat: string;           // Nationality code (e.g., "US", "CA")
 }
 
+/**
+ * CustomerDashboard - Main container component for customer management functionality.
+ *
+ * This component orchestrates the customer management workflow by:
+ * - Displaying a searchable data grid of customers
+ * - Managing modal state for creating/editing customers
+ * - Handling success/error notifications via snackbars
+ * - Coordinating data refresh between components
+ *
+ * Features:
+ * - View customers in a paginated, searchable table
+ * - Create new customers via modal form
+ * - Edit existing customers via modal form
+ * - Real-time data synchronization with USERS API
+ * - User feedback through success/error notifications
+ */
 export default function CustomerDashboard() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<User | null>(null);
-  const [isCreateMode, setIsCreateMode] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
-  const [refreshKey, setRefreshKey] = useState(0);
+  // Modal state management for customer creation/editing
+  const [modalOpen, setModalOpen] = useState(false);                                    // Controls visibility of the edit/create modal
+  const [selectedCustomer, setSelectedCustomer] = useState<User | null>(null);         // Stores the customer being edited (null for new customer)
+  const [isCreateMode, setIsCreateMode] = useState(false);                             // Determines if modal is in create (true) or edit (false) mode
+
+  // Snackbar state management for user feedback
+  const [snackbarOpen, setSnackbarOpen] = useState(false);                             // Controls visibility of success/error notifications
+  const [snackbarMessage, setSnackbarMessage] = useState("");                          // Message to display in the snackbar
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success"); // Severity level for styling (success = green, error = red)
+
+  // Data refresh mechanism - incrementing this key forces CustomerDataGrid to re-fetch data
+  const [refreshKey, setRefreshKey] = useState(0);                                     // Used as React key to trigger data grid refresh
 
   // Handle opening edit modal for existing customer
   const handleEditCustomer = (customer: User) => {
