@@ -107,54 +107,101 @@ export default function CustomerDashboard() {
   // Data refresh mechanism - incrementing this key forces CustomerDataGrid to re-fetch data
   const [refreshKey, setRefreshKey] = useState(0);                                     // Used as React key to trigger data grid refresh
 
-  // Handle opening edit modal for existing customer
+  /**
+   * Handles opening the edit modal for an existing customer.
+   * This function is called when a user clicks the edit button in the data grid.
+   *
+   * @param customer - The customer object to be edited
+   *
+   * Workflow:
+   * 1. Sets the selected customer to be edited
+   * 2. Switches modal to edit mode (not create mode)
+   * 3. Opens the modal dialog
+   */
   const handleEditCustomer = (customer: User) => {
-    setSelectedCustomer(customer);
-    setIsCreateMode(false);
-    setModalOpen(true);
+    setSelectedCustomer(customer);     // Store the customer data for editing
+    setIsCreateMode(false);           // Set to edit mode (not create)
+    setModalOpen(true);               // Open the modal dialog
   };
 
-  // Handle opening modal for new customer
+  /**
+   * Handles opening the modal for creating a new customer.
+   * This function is called when a user clicks the "Add Customer" button.
+   *
+   * Workflow:
+   * 1. Clears any previously selected customer
+   * 2. Switches modal to create mode
+   * 3. Opens the modal dialog with empty form
+   */
   const handleAddCustomer = () => {
-    setSelectedCustomer(null);
-    setIsCreateMode(true);
-    setModalOpen(true);
+    setSelectedCustomer(null);        // Clear any previously selected customer
+    setIsCreateMode(true);            // Set to create mode
+    setModalOpen(true);               // Open the modal dialog
   };
 
-  // Handle closing modal
+  /**
+   * Handles closing the customer edit/create modal.
+   * This function resets all modal-related state to clean up after modal closure.
+   *
+   * Workflow:
+   * 1. Closes the modal dialog
+   * 2. Clears the selected customer
+   * 3. Resets the create mode flag
+   */
   const handleCloseModal = () => {
-    setModalOpen(false);
-    setSelectedCustomer(null);
-    setIsCreateMode(false);
+    setModalOpen(false);              // Close the modal dialog
+    setSelectedCustomer(null);        // Clear selected customer data
+    setIsCreateMode(false);           // Reset create mode flag
   };
 
-  // Handle saving customer (both create and update)
+  /**
+   * Handles saving customer data (both create and update operations).
+   * This function is called when the user submits the customer form modal.
+   * The actual API calls are handled within the CustomerEditModal component.
+   *
+   * @param customer - The customer data to be saved
+   *
+   * Workflow:
+   * 1. Determines the appropriate success message based on operation type
+   * 2. Shows success notification to user
+   * 3. Triggers data grid refresh to show updated data
+   * 4. Closes the modal dialog
+   * 5. Handles any errors by showing error notification
+   */
   const handleSaveCustomer = async (customer: User) => {
     try {
+      // Set appropriate success message based on operation type
       if (isCreateMode) {
         setSnackbarMessage("Customer created successfully!");
       } else {
         setSnackbarMessage("Customer updated successfully!");
       }
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-      
-      // Refresh the data grid by incrementing the refresh key
+      setSnackbarSeverity("success");     // Set notification to success (green)
+      setSnackbarOpen(true);              // Show the success notification
+
+      // Force data grid to refresh by incrementing the refresh key
+      // This triggers a re-render of CustomerDataGrid component with fresh data
       setRefreshKey(prev => prev + 1);
-      
+
+      // Close the modal after successful operation
       handleCloseModal();
     } catch (error) {
+      // Handle any errors during the save operation
       setSnackbarMessage(
         `Failed to ${isCreateMode ? "create" : "update"} customer. Please try again.`
       );
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
+      setSnackbarSeverity("error");       // Set notification to error (red)
+      setSnackbarOpen(true);              // Show the error notification
     }
   };
 
-  // Handle closing snackbar
+  /**
+   * Handles closing the success/error notification snackbar.
+   * This function is called when the user dismisses the notification
+   * or when the auto-hide duration expires.
+   */
   const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
+    setSnackbarOpen(false);             // Hide the notification snackbar
   };
 
   return (
