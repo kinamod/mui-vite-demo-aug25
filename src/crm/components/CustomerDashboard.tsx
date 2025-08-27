@@ -204,9 +204,22 @@ export default function CustomerDashboard() {
     setSnackbarOpen(false);             // Hide the notification snackbar
   };
 
+  /**
+   * Render the complete customer dashboard interface.
+   *
+   * Component Structure:
+   * 1. Main container with responsive width constraints
+   * 2. Header section with title and description
+   * 3. Customer data grid with search and edit capabilities
+   * 4. Modal dialog for customer creation/editing (conditionally rendered)
+   * 5. Notification snackbar for user feedback (conditionally rendered)
+   */
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
-      {/* Header */}
+      {/*
+        Header Section - Provides context and instructions for the page
+        Includes main title and descriptive text about functionality
+      */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
           Customer Management
@@ -217,14 +230,43 @@ export default function CustomerDashboard() {
         </Typography>
       </Box>
 
-      {/* Customer Data Grid */}
+      {/*
+        Customer Data Grid Component - Main interface for viewing and managing customers
+
+        Props:
+        - key={refreshKey}: Forces component re-render when data needs to be refreshed
+        - onEditCustomer: Callback function triggered when user clicks edit button
+        - onAddCustomer: Callback function triggered when user clicks add customer button
+
+        This component handles:
+        - Fetching customer data from USERS API
+        - Displaying customers in a paginated table
+        - Search functionality across customer fields
+        - Row selection and bulk operations
+        - Loading states and error handling
+      */}
       <CustomerDataGrid
-        key={refreshKey} // Force re-render when refreshKey changes
+        key={refreshKey}
         onEditCustomer={handleEditCustomer}
         onAddCustomer={handleAddCustomer}
       />
 
-      {/* Customer Edit Modal */}
+      {/*
+        Customer Edit Modal Component - Dialog for creating/editing customer information
+
+        Props:
+        - open: Controls modal visibility (true when editing/creating)
+        - customer: Customer data to edit (null for new customer creation)
+        - isCreate: Determines if modal is in create mode (true) or edit mode (false)
+        - onClose: Callback function to close modal and reset state
+        - onSave: Callback function triggered when form is submitted successfully
+
+        This component handles:
+        - Form validation and data entry
+        - API calls for customer creation/updates
+        - Error handling and user feedback within the modal
+        - Dynamic form behavior based on create vs edit mode
+      */}
       <CustomerEditModal
         open={modalOpen}
         customer={selectedCustomer}
@@ -233,7 +275,19 @@ export default function CustomerDashboard() {
         onSave={handleSaveCustomer}
       />
 
-      {/* Success/Error Snackbar */}
+      {/*
+        Success/Error Notification Snackbar - Provides user feedback for operations
+
+        Configuration:
+        - autoHideDuration: Automatically hides after 6 seconds
+        - anchorOrigin: Positioned at bottom-right of screen
+        - severity: Determines color and icon (success = green, error = red)
+
+        This component shows:
+        - Success messages after successful customer operations
+        - Error messages when operations fail
+        - Auto-dismisses or can be manually closed by user
+      */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
