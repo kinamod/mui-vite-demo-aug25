@@ -142,7 +142,11 @@ export default function UsersDashboard() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             InputProps={{
-              startAdornment: <SearchRoundedIcon fontSize="small" />,
+              startAdornment: (
+                <Box component="span" sx={{ display: "inline-flex", alignItems: "center", color: "text.secondary", mr: 0.5 }}>
+                  <SearchRoundedIcon fontSize="small" />
+                </Box>
+              ),
             }}
             sx={{ flex: { xs: 1, sm: "0 0 320px" } }}
             aria-label="Search users"
