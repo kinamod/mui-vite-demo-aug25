@@ -14,6 +14,7 @@ import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -143,9 +144,9 @@ export default function UsersDashboard() {
             onChange={(e) => setQuery(e.target.value)}
             InputProps={{
               startAdornment: (
-                <Box component="span" sx={{ display: "inline-flex", alignItems: "center", color: "text.secondary", mr: 0.5 }}>
+                <InputAdornment position="start">
                   <SearchRoundedIcon fontSize="small" />
-                </Box>
+                </InputAdornment>
               ),
             }}
             sx={{ flex: { xs: 1, sm: "0 0 320px" } }}
