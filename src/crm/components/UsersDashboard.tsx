@@ -111,7 +111,7 @@ export default function UsersDashboard() {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+      <Typography variant="h6" component="h2" sx={{ mb: 2, fontSize: 18, fontWeight: 600, lineHeight: "28.8px" }}>
         Users
       </Typography>
 
@@ -123,6 +123,7 @@ export default function UsersDashboard() {
             placeholder="e.g. John, jane@example.com"
             value={pendingQuery}
             onChange={(e) => setPendingQuery(e.target.value)}
+            size="small"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
