@@ -1,6 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import UsersDashboard from "../components/UsersDashboard";
 
 export default function Customers() {
   return (
@@ -12,6 +13,7 @@ export default function Customers() {
         This is the customers management page where you can view and manage your
         customer data.
       </Typography>
+      <UsersDashboard />
     </Box>
   );
 }
