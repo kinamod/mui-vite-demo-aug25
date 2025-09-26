@@ -9,10 +9,6 @@ export default function Customers() {
       <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
         Customers Page
       </Typography>
-      <Typography paragraph>
-        This is the customers management page where you can view and manage your
-        customer data.
-      </Typography>
       <UsersDashboard />
     </Box>
   );
