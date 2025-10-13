@@ -149,6 +149,16 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
   };
 
   return (
+    /*
+     * Main Dialog Component Configuration
+     *
+     * The dialog is configured with specific styling requirements:
+     * - maxWidth="sm" provides appropriate sizing for the form content
+     * - fullWidth ensures the dialog utilizes available horizontal space
+     * - Custom PaperProps override default Material-UI styling for visual consistency
+     * - borderRadius of 10px creates a modern, rounded appearance
+     * - minWidth of 500px ensures adequate space for form fields and prevents cramping
+     */
     <Dialog
       open={open}
       onClose={handleClose}
@@ -161,7 +171,16 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
         }
       }}
     >
-      <DialogTitle sx={{ 
+      {/*
+       * Dialog Title with Custom Typography
+       *
+       * Styled to match the application's design system:
+       * - fontSize: 24px provides prominent header sizing
+       * - fontWeight: 600 (semi-bold) ensures good hierarchy
+       * - fontFamily: Inter for consistency with the overall application
+       * - color: #000 for high contrast and readability
+       */}
+      <DialogTitle sx={{
         fontSize: '24px',
         fontWeight: 600,
         fontFamily: 'Inter, -apple-system, Roboto, Helvetica, sans-serif',
