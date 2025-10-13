@@ -291,6 +291,14 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
           />
         </Box>
 
+        {/*
+         * Email Input Field
+         *
+         * Standard email input with type="email" for built-in browser validation.
+         * Unlike name fields, this uses the standard Inter font family to maintain
+         * consistency with the overall application design. The field is optional
+         * and spans the full width of the dialog content area.
+         */}
         <TextField
           label="Email"
           type="email"
@@ -301,7 +309,7 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
           disabled={loading}
           sx={{
             '& .MuiInputBase-input': {
-              fontFamily: 'Inter, -apple-system, Roboto, Helvetica, sans-serif',
+              fontFamily: 'Inter, -apple-system, Roboto, Helvetica, sans-serif', // Standard app font
               fontSize: '16px',
             },
             '& .MuiInputLabel-root': {
@@ -310,7 +318,21 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
           }}
         />
 
+        {/*
+         * Location Fields Row Container
+         *
+         * Groups city and country fields in a horizontal layout similar to the name fields.
+         * This creates a logical grouping of location-related information and optimizes
+         * the use of horizontal space within the dialog.
+         */}
         <Box sx={{ display: 'flex', gap: 2 }}>
+          {/*
+           * City Input Field
+           *
+           * Optional field for user's city location. Uses standard Inter font family
+           * and follows the same styling patterns as other non-name fields in the form.
+           * Disabled during loading states to prevent data inconsistency.
+           */}
           <TextField
             label="City"
             value={city}
@@ -328,7 +350,14 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
               },
             }}
           />
-          
+
+          {/*
+           * Country Input Field
+           *
+           * Optional field for user's country location. Complements the city field
+           * to provide complete location information. Maintains consistent styling
+           * with other location and contact fields.
+           */}
           <TextField
             label="Country"
             value={country}
@@ -348,13 +377,29 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
           />
         </Box>
       </DialogContent>
-      
-      <DialogActions sx={{ 
-        pb: 3, 
-        px: 3, 
-        gap: 2 
+
+      {/*
+       * Dialog Actions Container
+       *
+       * Contains the action buttons (Cancel and Save) with proper spacing and alignment:
+       * - pb: 3 provides bottom padding for visual separation from dialog edge
+       * - px: 3 ensures horizontal padding matches the content area
+       * - gap: 2 creates consistent spacing between action buttons
+       */}
+      <DialogActions sx={{
+        pb: 3,
+        px: 3,
+        gap: 2
       }}>
-        <Button 
+        {/*
+         * Cancel Button
+         *
+         * Secondary action button that closes the modal without saving changes.
+         * Uses outlined variant for visual hierarchy (less prominent than primary action).
+         * Disabled during loading to prevent interruption of save operations.
+         * textTransform: 'none' prevents automatic uppercase transformation for better readability.
+         */}
+        <Button
           onClick={handleClose}
           variant="outlined"
           disabled={loading}
@@ -365,7 +410,19 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
         >
           Cancel
         </Button>
-        <Button 
+
+        {/*
+         * Save Changes Button
+         *
+         * Primary action button that triggers the save operation.
+         * Features:
+         * - Custom dark background color (#05070A) for brand consistency
+         * - Darker hover state (#0B0E14) for interactive feedback
+         * - Dynamic content: shows loading spinner during API calls, text otherwise
+         * - Disabled during loading to prevent multiple concurrent save operations
+         * - textTransform: 'none' maintains proper casing for button text
+         */}
+        <Button
           onClick={handleSave}
           variant="contained"
           disabled={loading}
