@@ -189,20 +189,58 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
         Edit User
       </DialogTitle>
       
-      <DialogContent sx={{ 
-        display: "flex", 
-        flexDirection: "column", 
-        gap: 3, 
+      {/*
+       * Dialog Content Container
+       *
+       * Configured with a flexible column layout to accommodate form fields:
+       * - display: flex with flexDirection: column creates vertical stacking
+       * - gap: 3 provides consistent spacing between form elements (24px)
+       * - width: 100% ensures full utilization of dialog width
+       * - pt: 2 adds top padding for visual separation from the title
+       */}
+      <DialogContent sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
         width: "100%",
         pt: 2
       }}>
+        {/*
+         * Error Alert Display
+         *
+         * Conditionally rendered error message that appears at the top of the form
+         * when validation fails or API errors occur. Uses Material-UI's Alert
+         * component with 'error' severity for appropriate styling and iconography.
+         */}
         {error && (
           <Alert severity="error">
             {error}
           </Alert>
         )}
 
+        {/*
+         * Name Fields Row Container
+         *
+         * Groups first and last name fields in a horizontal layout using flexbox.
+         * The gap property ensures consistent spacing between the two fields.
+         * This layout optimizes screen space usage and creates a natural flow
+         * for name entry.
+         */}
         <Box sx={{ display: 'flex', gap: 2 }}>
+          {/*
+           * First Name Input Field
+           *
+           * IMPORTANT STYLING REQUIREMENTS:
+           * - fontFamily: 'Helvetica, Arial, sans-serif' - Specific font requirement for name fields
+           * - width/maxWidth: '300px' - Exact width requirement for name input fields
+           * - fontSize: '16px' - Standard text size for optimal readability
+           *
+           * The field includes:
+           * - Required validation (shown with asterisk in label)
+           * - Disabled state during loading to prevent concurrent edits
+           * - Custom styling that overrides Material-UI defaults
+           * - Separate font family for label vs input (Inter for label, Helvetica for input)
+           */}
           <TextField
             label="First Name"
             value={firstName}
@@ -213,17 +251,24 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
             disabled={loading}
             sx={{
               '& .MuiInputBase-input': {
-                fontFamily: 'Helvetica, Arial, sans-serif',
+                fontFamily: 'Helvetica, Arial, sans-serif', // PRD requirement: Helvetica for name fields
                 fontSize: '16px',
-                width: '300px',
-                maxWidth: '300px',
+                width: '300px',     // PRD requirement: ~300px width for name fields
+                maxWidth: '300px',  // Prevent expansion beyond required width
               },
               '& .MuiInputLabel-root': {
-                fontFamily: 'Inter, -apple-system, Roboto, Helvetica, sans-serif',
+                fontFamily: 'Inter, -apple-system, Roboto, Helvetica, sans-serif', // Consistent with app theme
               },
             }}
           />
-          
+
+          {/*
+           * Last Name Input Field
+           *
+           * Mirrors the first name field configuration with identical styling requirements.
+           * Both name fields must maintain the same visual consistency and meet the
+           * specific PRD requirements for font family and field width.
+           */}
           <TextField
             label="Last Name"
             value={lastName}
@@ -234,13 +279,13 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
             disabled={loading}
             sx={{
               '& .MuiInputBase-input': {
-                fontFamily: 'Helvetica, Arial, sans-serif',
+                fontFamily: 'Helvetica, Arial, sans-serif', // PRD requirement: Helvetica for name fields
                 fontSize: '16px',
-                width: '300px',
-                maxWidth: '300px',
+                width: '300px',     // PRD requirement: ~300px width for name fields
+                maxWidth: '300px',  // Prevent expansion beyond required width
               },
               '& .MuiInputLabel-root': {
-                fontFamily: 'Inter, -apple-system, Roboto, Helvetica, sans-serif',
+                fontFamily: 'Inter, -apple-system, Roboto, Helvetica, sans-serif', // Consistent with app theme
               },
             }}
           />
