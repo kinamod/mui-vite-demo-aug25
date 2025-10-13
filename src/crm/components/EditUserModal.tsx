@@ -11,6 +11,15 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { usersApiService, User, UserUpdateRequest } from "../services/usersApi";
 
+/**
+ * Props interface for the EditUserModal component
+ *
+ * @interface EditUserModalProps
+ * @property {boolean} open - Controls the visibility of the modal dialog
+ * @property {User | null} user - The user object to be edited, null when no user is selected
+ * @property {() => void} onClose - Callback function triggered when the modal should be closed
+ * @property {() => void} onUserUpdated - Callback function triggered after a successful user update to refresh parent data
+ */
 interface EditUserModalProps {
   open: boolean;
   user: User | null;
