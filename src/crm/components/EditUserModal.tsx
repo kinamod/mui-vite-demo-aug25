@@ -56,34 +56,69 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
   const [loading, setLoading] = useState(false);      // Controls loading spinner and disabled states during API calls
   const [error, setError] = useState<string | null>(null); // Stores error messages to display to the user
 
+  /**
+   * Effect hook that populates form fields when a user is selected for editing
+   *
+   * This effect runs whenever the 'user' prop changes and is responsible for:
+   * - Populating all form fields with the selected user's current data
+   * - Handling cases where user data might be incomplete (using fallback empty strings)
+   * - Clearing any existing error messages when a new user is loaded
+   * - Ensuring the form is ready for editing with the latest user information
+   */
   useEffect(() => {
     if (user) {
+      // Populate form fields with user data, using fallback empty strings for missing values
       setFirstName(user.name.first || "");
       setLastName(user.name.last || "");
       setEmail(user.email || "");
       setCity(user.location.city || "");
       setCountry(user.location.country || "");
+      // Clear any previous error messages when loading new user data
       setError(null);
     }
   }, [user]);
 
+  /**
+   * Handler for closing the modal dialog
+   *
+   * This function performs cleanup operations before closing:
+   * - Clears any error messages to ensure a clean state for next opening
+   * - Calls the parent's onClose callback to update the modal visibility state
+   */
   const handleClose = () => {
     setError(null);
     onClose();
   };
 
+  /**
+   * Handler for saving user changes to the backend
+   *
+   * This async function manages the complete save operation including:
+   * - Form validation for required fields (first name and last name)
+   * - Data preparation and sanitization (trimming whitespace)
+   * - API communication with proper error handling
+   * - UI state management (loading states, error messages)
+   * - Success callbacks and modal cleanup
+   *
+   * The function ensures data integrity by validating required fields before
+   * making API calls and provides user feedback throughout the process.
+   */
   const handleSave = async () => {
+    // Early return if no user is selected (safety check)
     if (!user) return;
 
+    // Validate required fields - first name and last name must not be empty
     if (!firstName.trim() || !lastName.trim()) {
       setError("First name and last name are required");
       return;
     }
 
+    // Start loading state to disable form and show progress indicator
     setLoading(true);
     setError(null);
 
     try {
+      // Prepare update data object with trimmed values to remove unnecessary whitespace
       const updateData: UserUpdateRequest = {
         name: {
           first: firstName.trim(),
@@ -96,12 +131,19 @@ export default function EditUserModal({ open, user, onClose, onUserUpdated }: Ed
         },
       };
 
+      // Make API call to update user data using the user's UUID as identifier
       await usersApiService.updateUser(user.login.uuid, updateData);
+
+      // Notify parent component that user has been updated (triggers data refresh)
       onUserUpdated();
+
+      // Close modal on successful update
       handleClose();
     } catch (err) {
+      // Handle API errors by displaying user-friendly error messages
       setError(err instanceof Error ? err.message : 'Failed to update user');
     } finally {
+      // Always stop loading state regardless of success or failure
       setLoading(false);
     }
   };
