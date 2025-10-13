@@ -27,14 +27,34 @@ interface EditUserModalProps {
   onUserUpdated: () => void;
 }
 
+/**
+ * EditUserModal Component
+ *
+ * A modal dialog component that allows users to edit customer information in the CRM system.
+ * This component provides a form interface for updating user details such as name, email,
+ * and location information. It integrates with the Users API for data persistence.
+ *
+ * Key Features:
+ * - Form validation for required fields (first name, last name)
+ * - Real-time error handling and user feedback
+ * - Loading states during API operations
+ * - Custom styling with specific font requirements for name fields
+ * - Responsive layout with proper spacing and alignment
+ *
+ * @param {EditUserModalProps} props - Component props containing modal state and callbacks
+ * @returns {JSX.Element} A Material-UI Dialog component with form fields for user editing
+ */
 export default function EditUserModal({ open, user, onClose, onUserUpdated }: EditUserModalProps) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Form field state variables - stores the current values of all editable user fields
+  const [firstName, setFirstName] = useState(""); // User's first name - required field with Helvetica font
+  const [lastName, setLastName] = useState("");   // User's last name - required field with Helvetica font
+  const [email, setEmail] = useState("");         // User's email address - optional field
+  const [city, setCity] = useState("");           // User's city location - optional field
+  const [country, setCountry] = useState("");     // User's country location - optional field
+
+  // UI state management
+  const [loading, setLoading] = useState(false);      // Controls loading spinner and disabled states during API calls
+  const [error, setError] = useState<string | null>(null); // Stores error messages to display to the user
 
   useEffect(() => {
     if (user) {
