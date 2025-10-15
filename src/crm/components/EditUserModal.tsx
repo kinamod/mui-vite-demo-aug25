@@ -155,16 +155,20 @@ export default function EditUserModal({
   };
 
   return (
+    /* Main modal dialog with responsive sizing */
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Edit User</DialogTitle>
       <DialogContent>
+        {/* Error alert - only shown when there's an error */}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
+        {/* Form container with proper spacing */}
         <Box sx={{ mt: 2 }}>
           <Grid container spacing={2}>
+            {/* First Name field - uses Helvetica font per PRD requirements */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -174,12 +178,15 @@ export default function EditUserModal({
                 required
                 sx={{
                   "& input": {
+                    // PRD requirement: Use Helvetica font for name fields
                     fontFamily: "Helvetica, Arial, sans-serif",
+                    // PRD requirement: Wide enough for most names (~300px)
                     minWidth: "300px",
                   },
                 }}
               />
             </Grid>
+            {/* Last Name field - also uses Helvetica font */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -194,6 +201,7 @@ export default function EditUserModal({
                 }}
               />
             </Grid>
+            {/* Email field - full width on its own row */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -204,6 +212,7 @@ export default function EditUserModal({
                 required
               />
             </Grid>
+            {/* City field - optional field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -212,6 +221,7 @@ export default function EditUserModal({
                 onChange={handleChange("city")}
               />
             </Grid>
+            {/* Country field - optional field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -223,15 +233,20 @@ export default function EditUserModal({
           </Grid>
         </Box>
       </DialogContent>
+      {/* Modal action buttons */}
       <DialogActions sx={{ px: 3, pb: 2 }}>
+        {/* Cancel button - disabled during save operation */}
         <Button onClick={onClose} disabled={loading}>
           Cancel
         </Button>
+        {/* Save button with form validation and loading state */}
         <Button
           onClick={handleSubmit}
           variant="contained"
+          // Disable if loading or required fields are empty
           disabled={loading || !formData.firstName || !formData.lastName || !formData.email}
         >
+          {/* Show loading spinner during save operation */}
           {loading ? <CircularProgress size={24} /> : "Save"}
         </Button>
       </DialogActions>
