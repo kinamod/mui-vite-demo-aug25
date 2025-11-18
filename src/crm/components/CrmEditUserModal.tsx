@@ -38,7 +38,7 @@ interface CrmEditUserModalProps {
   onUserUpdated: (user: User) => void;
 }
 
-const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
+const API_BASE_URL = "/api";
 
 export default function CrmEditUserModal({
   user,

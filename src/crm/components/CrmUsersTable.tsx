@@ -39,7 +39,7 @@ interface User {
   };
 }
 
-const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
+const API_BASE_URL = "/api";
 
 export default function CrmUsersTable() {
   const [users, setUsers] = React.useState<User[]>([]);
