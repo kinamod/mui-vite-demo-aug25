@@ -1,3 +1,14 @@
+/**
+ * CrmUsersTable Component
+ * 
+ * Displays a searchable, paginated table of users from the Users API.
+ * Implements the Customer Dashboard Enhancement PRD requirements:
+ * - Shows 20 users per page with "Load More" pagination
+ * - Provides search functionality by name, email, or city
+ * - Enables editing user details through a modal interface
+ * - Follows the Figma design specifications for styling and layout
+ */
+
 import * as React from "react";
 import {
   Box,
@@ -19,13 +30,17 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import CrmEditUserModal from "./CrmEditUserModal";
 
+/**
+ * User interface matching the Users API response structure
+ * Represents a single user with authentication, personal, and location data
+ */
 interface User {
   login: {
-    uuid: string;
+    uuid: string; // Unique identifier for the user
     username: string;
   };
   name: {
-    title: string;
+    title: string; // e.g., "Mr", "Ms", "Dr"
     first: string;
     last: string;
   };
@@ -35,37 +50,57 @@ interface User {
     country: string;
   };
   dob: {
-    age: number;
+    age: number; // User's age in years
   };
 }
 
+/**
+ * API base URL - uses Vite proxy to avoid CORS issues
+ * Proxied from https://user-api.builder-io.workers.dev/api
+ */
 const API_BASE_URL = "/api";
 
 export default function CrmUsersTable() {
-  const [users, setUsers] = React.useState<User[]>([]);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [page, setPage] = React.useState(1);
-  const [total, setTotal] = React.useState(0);
-  const [editingUser, setEditingUser] = React.useState<User | null>(null);
-  const perPage = 20;
+  // State: User data and pagination
+  const [users, setUsers] = React.useState<User[]>([]); // Array of loaded users
+  const [loading, setLoading] = React.useState(false); // Loading indicator state
+  const [error, setError] = React.useState<string | null>(null); // Error message if API fails
+  const [searchQuery, setSearchQuery] = React.useState(""); // Current search input value
+  const [page, setPage] = React.useState(1); // Current page number (1-indexed)
+  const [total, setTotal] = React.useState(0); // Total number of users available from API
+  const [editingUser, setEditingUser] = React.useState<User | null>(null); // User currently being edited in modal
+  const perPage = 20; // Number of users to load per page (PRD requirement)
 
+  /**
+   * Fetches users from the API with pagination and optional search
+   * 
+   * @param pageNum - Page number to fetch (1-indexed)
+   * @param search - Optional search query to filter users by name, email, or city
+   * 
+   * Behavior:
+   * - On page 1: Replaces existing users (new search or initial load)
+   * - On page > 1: Appends to existing users (Load More functionality)
+   * - Sets error state if fetch fails
+   * - Updates total count for pagination logic
+   */
   const fetchUsers = React.useCallback(
     async (pageNum: number, search: string = "") => {
       setLoading(true);
       setError(null);
 
       try {
+        // Build query parameters for the API request
         const params = new URLSearchParams({
           page: pageNum.toString(),
           perPage: perPage.toString(),
         });
 
+        // Add search query if provided
         if (search) {
           params.append("search", search);
         }
 
+        // Fetch users from the API
         const response = await fetch(`${API_BASE_URL}/users?${params}`);
         if (!response.ok) {
           throw new Error("Failed to fetch users");
@@ -73,6 +108,7 @@ export default function CrmUsersTable() {
 
         const data = await response.json();
 
+        // Replace users on page 1 (new search), append on subsequent pages (Load More)
         if (pageNum === 1) {
           setUsers(data.data);
         } else {
@@ -89,29 +125,54 @@ export default function CrmUsersTable() {
     [perPage]
   );
 
+  /**
+   * Initial data load on component mount
+   * Fetches the first page of users without search filter
+   */
   React.useEffect(() => {
     fetchUsers(1, searchQuery);
   }, []);
 
+  /**
+   * Handles search button click or Enter key press
+   * Resets to page 1 and fetches users matching the search query
+   */
   const handleSearch = () => {
     setPage(1);
     fetchUsers(1, searchQuery);
   };
 
+  /**
+   * Handles "Load More" button click
+   * Fetches the next page of users and appends to current list
+   */
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
     fetchUsers(nextPage, searchQuery);
   };
 
+  /**
+   * Opens the edit modal for the specified user
+   * @param user - The user object to edit
+   */
   const handleEditClick = (user: User) => {
     setEditingUser(user);
   };
 
+  /**
+   * Closes the edit modal without saving changes
+   */
   const handleCloseModal = () => {
     setEditingUser(null);
   };
 
+  /**
+   * Handles successful user update from the modal
+   * Updates the user in the local state to reflect changes without refetching
+   * 
+   * @param updatedUser - The user object with updated values
+   */
   const handleUserUpdated = (updatedUser: User) => {
     setUsers((prev) =>
       prev.map((u) =>
@@ -123,6 +184,7 @@ export default function CrmUsersTable() {
 
   return (
     <Box sx={{ width: "100%" }}>
+      {/* Page Title: "Customers" - matches Figma design */}
       <Typography
         variant="h4"
         component="h1"
@@ -131,6 +193,7 @@ export default function CrmUsersTable() {
         Customers
       </Typography>
 
+      {/* Section Title: "Users" - matches Figma design */}
       <Typography
         variant="h5"
         component="h2"
@@ -144,6 +207,7 @@ export default function CrmUsersTable() {
         Users
       </Typography>
 
+      {/* Search Bar and Button */}
       <Box
         sx={{
           display: "flex",
@@ -152,11 +216,13 @@ export default function CrmUsersTable() {
           alignItems: "center",
         }}
       >
+        {/* Search Input Field - styled per Figma specifications */}
         <TextField
           placeholder="Search users by name, email, or city"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={(e) => {
+            // Allow Enter key to trigger search
             if (e.key === "Enter") {
               handleSearch();
             }
@@ -174,6 +240,7 @@ export default function CrmUsersTable() {
             },
           }}
         />
+        {/* Search Button - dark theme matching Figma design */}
         <Button
           variant="contained"
           onClick={handleSearch}
@@ -200,12 +267,14 @@ export default function CrmUsersTable() {
         </Button>
       </Box>
 
+      {/* Error Alert - displays if API request fails */}
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
       )}
 
+      {/* Users Table - styled to match Figma design specifications */}
       <TableContainer
         component={Paper}
         sx={{
@@ -215,6 +284,7 @@ export default function CrmUsersTable() {
         }}
       >
         <Table>
+          {/* Table Header - column names with specific widths from Figma */}
           <TableHead>
             <TableRow
               sx={{
@@ -241,6 +311,7 @@ export default function CrmUsersTable() {
               </TableCell>
             </TableRow>
           </TableHead>
+          {/* Table Body - displays user data rows */}
           <TableBody>
             {users.map((user) => (
               <TableRow
@@ -256,6 +327,7 @@ export default function CrmUsersTable() {
                   },
                 }}
               >
+                {/* Full name combining first and last */}
                 <TableCell>
                   {user.name.first} {user.name.last}
                 </TableCell>
@@ -264,8 +336,10 @@ export default function CrmUsersTable() {
                 <TableCell>{user.location.country}</TableCell>
                 <TableCell align="right">{user.dob.age}</TableCell>
                 <TableCell align="center">
+                  {/* Edit Button - opens modal for editing user details */}
                   <IconButton
                     onClick={() => handleEditClick(user)}
+                    aria-label={`Edit ${user.name.first} ${user.name.last}`}
                     sx={{
                       width: "40px",
                       height: "40px",
@@ -286,12 +360,14 @@ export default function CrmUsersTable() {
         </Table>
       </TableContainer>
 
+      {/* Loading Spinner - shown during initial data load (page 1) */}
       {loading && page === 1 && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <CircularProgress />
         </Box>
       )}
 
+      {/* Load More Button - shown when there are more users to load */}
       {!loading && users.length < total && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <Button
@@ -319,6 +395,7 @@ export default function CrmUsersTable() {
         </Box>
       )}
 
+      {/* Edit User Modal - displayed when a user is being edited */}
       {editingUser && (
         <CrmEditUserModal
           user={editingUser}
