@@ -11,6 +11,12 @@ export default defineConfig({
         target: "https://user-api.builder-io.workers.dev",
         changeOrigin: true,
         secure: true,
+        rewrite: (path) => path,
+        configure: (proxy, options) => {
+          proxy.on("proxyReq", (proxyReq, req, res) => {
+            proxyReq.setHeader("referer", "https://user-api.builder-io.workers.dev");
+          });
+        },
       },
     },
   },
