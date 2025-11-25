@@ -19,6 +19,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 
+// Type definitions for User API response structure
+
+/**
+ * User location information including address, coordinates, and timezone
+ */
 interface UserLocation {
   street?: {
     number?: number;
@@ -38,34 +43,52 @@ interface UserLocation {
   };
 }
 
+/**
+ * User name components (title, first name, last name)
+ */
 interface UserName {
   title?: string;
   first: string;
   last: string;
 }
 
+/**
+ * User date of birth information
+ */
 interface UserDOB {
   date?: string;
   age?: number;
 }
 
+/**
+ * User registration information
+ */
 interface UserRegistered {
   date?: string;
   age?: number;
 }
 
+/**
+ * User profile picture URLs in different sizes
+ */
 interface UserPicture {
   large?: string;
   medium?: string;
   thumbnail?: string;
 }
 
+/**
+ * User login credentials and unique identifier
+ */
 interface UserLogin {
   uuid: string;
   username?: string;
   password?: string;
 }
 
+/**
+ * Complete user object structure from the API
+ */
 interface User {
   login: UserLogin;
   name: UserName;
@@ -80,6 +103,9 @@ interface User {
   nat?: string;
 }
 
+/**
+ * API response structure for paginated user data
+ */
 interface ApiResponse {
   page: number;
   perPage: number;
@@ -89,17 +115,27 @@ interface ApiResponse {
   data: User[];
 }
 
+// API base URL for user operations
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
+/**
+ * Customers page component that displays a searchable, paginated table of users
+ * with edit functionality. Implements the Customer Dashboard Enhancement PRD.
+ */
 export default function Customers() {
+  // State management for user data and pagination
   const [users, setUsers] = React.useState<User[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [loadingMore, setLoadingMore] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [total, setTotal] = React.useState(0);
+
+  // State management for search functionality
   const [searchQuery, setSearchQuery] = React.useState("");
   const [currentSearch, setCurrentSearch] = React.useState("");
+
+  // State management for edit dialog
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
   const [editingUser, setEditingUser] = React.useState<User | null>(null);
   const [editFormData, setEditFormData] = React.useState({
@@ -111,11 +147,19 @@ export default function Customers() {
   });
   const [saving, setSaving] = React.useState(false);
 
+  // Number of users to load per page (as specified in PRD)
   const perPage = 20;
 
+  /**
+   * Fetches users from the API with pagination and search support
+   * @param pageNum - The page number to fetch
+   * @param search - Optional search query to filter users
+   * @param append - If true, appends results to existing users (for "Load More")
+   */
   const fetchUsers = React.useCallback(
     async (pageNum: number, search: string = "", append: boolean = false) => {
       try {
+        // Set appropriate loading state
         if (append) {
           setLoadingMore(true);
         } else {
@@ -123,6 +167,7 @@ export default function Customers() {
         }
         setError(null);
 
+        // Build query parameters
         const params = new URLSearchParams({
           page: pageNum.toString(),
           perPage: perPage.toString(),
@@ -132,6 +177,7 @@ export default function Customers() {
           params.append("search", search);
         }
 
+        // Fetch data from API
         const response = await fetch(`${API_BASE_URL}/users?${params}`);
         if (!response.ok) {
           throw new Error("Failed to fetch users");
@@ -139,6 +185,7 @@ export default function Customers() {
 
         const data: ApiResponse = await response.json();
 
+        // Update users state (append or replace based on mode)
         if (append) {
           setUsers((prev) => [...prev, ...data.data]);
         } else {
@@ -155,27 +202,41 @@ export default function Customers() {
     []
   );
 
+  // Fetch users on component mount and when search changes
   React.useEffect(() => {
     fetchUsers(1, currentSearch);
   }, [currentSearch, fetchUsers]);
 
+  /**
+   * Handles search button click - triggers a new search
+   */
   const handleSearch = () => {
     setCurrentSearch(searchQuery);
     setPage(1);
   };
 
+  /**
+   * Handles Enter key press in search input
+   */
   const handleSearchKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
 
+  /**
+   * Handles "Load More" button click - fetches next page of users
+   */
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
     fetchUsers(nextPage, currentSearch, true);
   };
 
+  /**
+   * Opens the edit dialog for a specific user
+   * @param user - The user to edit
+   */
   const handleEditClick = (user: User) => {
     setEditingUser(user);
     setEditFormData({
@@ -188,11 +249,19 @@ export default function Customers() {
     setEditDialogOpen(true);
   };
 
+  /**
+   * Closes the edit dialog and resets editing state
+   */
   const handleEditDialogClose = () => {
     setEditDialogOpen(false);
     setEditingUser(null);
   };
 
+  /**
+   * Updates a field in the edit form
+   * @param field - The field name to update
+   * @param value - The new value for the field
+   */
   const handleEditFormChange = (field: string, value: string) => {
     setEditFormData((prev) => ({
       ...prev,
@@ -200,11 +269,16 @@ export default function Customers() {
     }));
   };
 
+  /**
+   * Saves the edited user data to the API
+   * Updates the local state on success
+   */
   const handleSaveUser = async () => {
     if (!editingUser) return;
 
     setSaving(true);
     try {
+      // Prepare updated user object
       const updatedUser = {
         name: {
           ...editingUser.name,
@@ -219,6 +293,7 @@ export default function Customers() {
         },
       };
 
+      // Send PUT request to update user
       const response = await fetch(
         `${API_BASE_URL}/users/${editingUser.login.uuid}`,
         {
@@ -234,6 +309,7 @@ export default function Customers() {
         throw new Error("Failed to update user");
       }
 
+      // Update local state with edited user data
       setUsers((prev) =>
         prev.map((user) =>
           user.login.uuid === editingUser.login.uuid
@@ -263,10 +339,12 @@ export default function Customers() {
     }
   };
 
+  // Check if there are more users to load
   const hasMore = users.length < total;
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+      {/* Page title - "Customers" */}
       <Typography
         variant="h4"
         component="h1"
@@ -274,6 +352,8 @@ export default function Customers() {
       >
         Customers
       </Typography>
+
+      {/* Subtitle - "Users" */}
       <Typography
         variant="h6"
         component="h2"
@@ -287,12 +367,14 @@ export default function Customers() {
         Users
       </Typography>
 
+      {/* Error alert display */}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
+      {/* Search bar with input and button */}
       <Box sx={{ mb: 3, display: "flex", gap: 2, alignItems: "center" }}>
         <TextField
           placeholder="Search users by name, email, or city"
@@ -315,6 +397,7 @@ export default function Customers() {
             },
           }}
         />
+        {/* Search button with Figma design styling */}
         <Button
           variant="contained"
           onClick={handleSearch}
@@ -340,6 +423,7 @@ export default function Customers() {
         </Button>
       </Box>
 
+      {/* Main table container with Figma background color */}
       <Box
         sx={{
           borderRadius: "8px",
@@ -355,6 +439,7 @@ export default function Customers() {
               },
             }}
           >
+            {/* Table header with column names */}
             <TableHead>
               <TableRow
                 sx={{
@@ -376,14 +461,18 @@ export default function Customers() {
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
+
+            {/* Table body with user data or loading/empty states */}
             <TableBody>
               {loading && !loadingMore ? (
+                // Loading spinner for initial load
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
                     <CircularProgress />
                   </TableCell>
                 </TableRow>
               ) : users.length === 0 ? (
+                // Empty state when no users found
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
                     <Typography color="text.secondary">
@@ -392,6 +481,7 @@ export default function Customers() {
                   </TableCell>
                 </TableRow>
               ) : (
+                // User rows
                 users.map((user) => (
                   <TableRow
                     key={user.login.uuid}
@@ -413,6 +503,7 @@ export default function Customers() {
                     <TableCell>{user.location.country || "-"}</TableCell>
                     <TableCell align="right">{user.dob?.age || "-"}</TableCell>
                     <TableCell align="center">
+                      {/* Edit button with Figma styling */}
                       <IconButton
                         size="small"
                         onClick={() => handleEditClick(user)}
@@ -439,6 +530,7 @@ export default function Customers() {
           </Table>
         </TableContainer>
 
+        {/* Load More button - shows when there are more users to load */}
         {hasMore && !loading && (
           <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
             <Button
@@ -468,6 +560,7 @@ export default function Customers() {
         )}
       </Box>
 
+      {/* Edit User Dialog/Modal */}
       <Dialog
         open={editDialogOpen}
         onClose={handleEditDialogClose}
@@ -489,6 +582,7 @@ export default function Customers() {
         </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
+            {/* First Name input - uses Helvetica font as per PRD */}
             <TextField
               label="First Name"
               value={editFormData.firstName}
@@ -507,6 +601,7 @@ export default function Customers() {
                 },
               }}
             />
+            {/* Last Name input - uses Helvetica font as per PRD */}
             <TextField
               label="Last Name"
               value={editFormData.lastName}
@@ -523,6 +618,7 @@ export default function Customers() {
                 },
               }}
             />
+            {/* Email input */}
             <TextField
               label="Email"
               type="email"
@@ -540,6 +636,7 @@ export default function Customers() {
                 },
               }}
             />
+            {/* City input */}
             <TextField
               label="City"
               value={editFormData.city}
@@ -556,6 +653,7 @@ export default function Customers() {
                 },
               }}
             />
+            {/* Country input */}
             <TextField
               label="Country"
               value={editFormData.country}
@@ -574,6 +672,7 @@ export default function Customers() {
             />
           </Stack>
         </DialogContent>
+        {/* Dialog action buttons */}
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={handleEditDialogClose} disabled={saving}>
             Cancel
