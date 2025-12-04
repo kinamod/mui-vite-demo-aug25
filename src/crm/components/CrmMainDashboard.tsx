@@ -12,19 +12,10 @@ import CrmUpcomingTasks from "./CrmUpcomingTasks";
 import CrmSalesChart from "./CrmSalesChart";
 import CrmLeadsBySourceChart from "./CrmLeadsBySourceChart";
 
-// Sample data for stat cards
-const statCardsData = [
-  {
-    title: "Total Customers",
-    value: "2,543",
-    interval: "Last 30 days",
-    trend: "up",
-    trendValue: "+15%",
-    data: [
-      200, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500,
-      520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 720, 740, 760, 780, 800,
-    ],
-  },
+const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
+
+// Sample data for other stat cards
+const otherStatCardsData = [
   {
     title: "Deals Won",
     value: "$542K",
@@ -89,7 +80,25 @@ export default function CrmMainDashboard() {
 
       {/* Stats Cards row */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        {statCardsData.map((card, index) => (
+        <Grid item xs={12} sm={6} lg={3}>
+          <CrmStatCard
+            title="Total Customers"
+            value={
+              loadingCustomers
+                ? "..."
+                : totalCustomers?.toLocaleString() || "0"
+            }
+            interval="From Users API"
+            trend="up"
+            trendValue="+15%"
+            data={[
+              200, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460,
+              480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 720,
+              740, 760, 780, 800,
+            ]}
+          />
+        </Grid>
+        {otherStatCardsData.map((card, index) => (
           <Grid key={index} item xs={12} sm={6} lg={3}>
             <CrmStatCard
               title={card.title}
