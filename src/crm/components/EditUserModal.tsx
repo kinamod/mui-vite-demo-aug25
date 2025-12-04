@@ -7,22 +7,47 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { User } from "../services/usersApi";
 
+/**
+ * Props interface for the EditUserModal component
+ * Defines the contract for controlling the modal's behavior and data
+ */
 interface EditUserModalProps {
+  /** Controls whether the modal is visible or hidden */
   open: boolean;
+  /** The user object to edit, or null if no user is selected */
   user: User | null;
+  /** Callback function triggered when the modal should close */
   onClose: () => void;
+  /** Callback function triggered when the user clicks Save, receives userId and updated names */
   onSave: (userId: string, firstName: string, lastName: string) => void;
 }
 
+/**
+ * EditUserModal Component
+ *
+ * A modal dialog for editing user information. Currently supports editing
+ * first and last names. Per PRD requirements:
+ * - Uses Helvetica font for name input fields
+ * - Input fields are wide enough to display most names on a single line (~300px)
+ * - Provides Save and Cancel actions
+ *
+ * @param props - EditUserModalProps containing modal state and callbacks
+ */
 export default function EditUserModal({
   open,
   user,
   onClose,
   onSave,
 }: EditUserModalProps) {
+  // Local state for managing form inputs
+  // These are controlled components that sync with the user prop via useEffect
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
 
+  /**
+   * Synchronize form fields with the selected user
+   * When a new user is selected, populate the form with their current data
+   */
   React.useEffect(() => {
     if (user) {
       setFirstName(user.name.first);
@@ -30,12 +55,18 @@ export default function EditUserModal({
     }
   }, [user]);
 
+  /**
+   * Handle the Save button click
+   * Validates that a user is selected, then calls the parent's onSave callback
+   * with the user's UUID and the updated name values
+   */
   const handleSave = () => {
     if (user) {
       onSave(user.login.uuid, firstName, lastName);
     }
   };
 
+  // Guard clause: don't render anything if no user is selected
   if (!user) return null;
 
   return (
