@@ -191,6 +191,11 @@ export default function Customers() {
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+      {/*
+        Page Header: "Customers"
+        Per PRD 3.1.1: A new Users dashboard is embedded within the Customers tab
+        Matches Figma design: 24px font, 600 weight, 36px line height
+      */}
       <Typography
         variant="h4"
         component="h1"
@@ -205,6 +210,11 @@ export default function Customers() {
         Customers
       </Typography>
 
+      {/*
+        Section Header: "Users"
+        Indicates this is the Users view within the Customers page
+        Matches Figma design: 20px font, 600 weight, 26.68px line height
+      */}
       <Typography
         variant="h5"
         component="h2"
@@ -219,7 +229,18 @@ export default function Customers() {
         Users
       </Typography>
 
+      {/*
+        Search Bar Section
+        Per PRD 3.1.3: A search input is provided above the table
+        Matches Figma design with exact styling
+      */}
       <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+        {/*
+          Search Input Field
+          - Placeholder text per PRD: "Search users by name, email, or city"
+          - 363px width to match Figma design
+          - Enter key triggers search for better UX
+        */}
         <TextField
           placeholder="Search users by name, email, or city"
           variant="outlined"
@@ -250,6 +271,13 @@ export default function Customers() {
             },
           }}
         />
+
+        {/*
+          Search Button
+          Styled to match Figma design with dark gradient background
+          Uses Poppins font (20px) as specified in design
+          Disabled during loading to prevent duplicate requests
+        */}
         <Button
           variant="contained"
           onClick={handleSearch}
@@ -276,12 +304,30 @@ export default function Customers() {
         </Button>
       </Stack>
 
+      {/*
+        Error Alert
+        Per PRD 6: Include error handling for failed API requests
+        Displays toast-like notifications when API calls fail
+      */}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
+      {/*
+        Users Table
+        Per PRD 3.1.2: Display user data in a table format
+        - Each row represents a single user
+        - The table must show 20 users by default
+        - Users can scroll to see all loaded entries
+
+        Matches Figma design with:
+        - #F5F6FA background color
+        - 8px border radius
+        - 0.5px solid borders (#0B0E14)
+        - Inter font family
+      */}
       <TableContainer
         component={Paper}
         sx={{
@@ -291,6 +337,11 @@ export default function Customers() {
         }}
       >
         <Table sx={{ minWidth: 650 }}>
+          {/*
+            Table Header Row
+            Displays column names: Name, Email, City, Country, Age, Actions
+            Per PRD 5: Use consistent column spacing for readability
+          */}
           <TableHead>
             <TableRow
               sx={{
@@ -298,6 +349,7 @@ export default function Customers() {
                 borderBottom: "0.5px solid #0B0E14",
               }}
             >
+              {/* Name column header */}
               <TableCell
                 sx={{
                   fontFamily:
@@ -310,6 +362,8 @@ export default function Customers() {
               >
                 Name
               </TableCell>
+
+              {/* Email column header */}
               <TableCell
                 sx={{
                   fontFamily:
@@ -322,6 +376,8 @@ export default function Customers() {
               >
                 Email
               </TableCell>
+
+              {/* City column header */}
               <TableCell
                 sx={{
                   fontFamily:
@@ -334,6 +390,8 @@ export default function Customers() {
               >
                 City
               </TableCell>
+
+              {/* Country column header */}
               <TableCell
                 sx={{
                   fontFamily:
@@ -346,6 +404,8 @@ export default function Customers() {
               >
                 Country
               </TableCell>
+
+              {/* Age column header - right aligned for numeric data */}
               <TableCell
                 align="right"
                 sx={{
@@ -359,6 +419,8 @@ export default function Customers() {
               >
                 Age
               </TableCell>
+
+              {/* Actions column header - center aligned */}
               <TableCell
                 align="center"
                 sx={{
@@ -374,6 +436,11 @@ export default function Customers() {
               </TableCell>
             </TableRow>
           </TableHead>
+          {/*
+            Table Body - User Rows
+            Maps through the users array to create a row for each user
+            Per PRD 3.1.2: Each row represents a single user
+          */}
           <TableBody>
             {users.map((user) => (
               <TableRow
@@ -383,6 +450,7 @@ export default function Customers() {
                   borderBottom: "0.5px solid #0B0E14",
                 }}
               >
+                {/* User's full name (first + last) */}
                 <TableCell
                   sx={{
                     fontFamily:
@@ -395,6 +463,8 @@ export default function Customers() {
                 >
                   {user.name.first} {user.name.last}
                 </TableCell>
+
+                {/* User's email address */}
                 <TableCell
                   sx={{
                     fontFamily:
@@ -407,6 +477,8 @@ export default function Customers() {
                 >
                   {user.email}
                 </TableCell>
+
+                {/* User's city location */}
                 <TableCell
                   sx={{
                     fontFamily:
@@ -419,6 +491,8 @@ export default function Customers() {
                 >
                   {user.location.city}
                 </TableCell>
+
+                {/* User's country */}
                 <TableCell
                   sx={{
                     fontFamily:
@@ -431,6 +505,8 @@ export default function Customers() {
                 >
                   {user.location.country}
                 </TableCell>
+
+                {/* User's age - right aligned */}
                 <TableCell
                   align="right"
                   sx={{
@@ -444,6 +520,12 @@ export default function Customers() {
                 >
                   {user.dob.age}
                 </TableCell>
+
+                {/*
+                  Actions column with Edit button
+                  Per PRD 3.1.4: Each row has an "Edit" button that opens a modal
+                  Styled to match Figma design: 40x40px, rounded, light background
+                */}
                 <TableCell
                   align="center"
                   sx={{ borderBottom: "0.5px solid #0B0E14" }}
@@ -470,12 +552,27 @@ export default function Customers() {
         </Table>
       </TableContainer>
 
+      {/*
+        Loading Indicator
+        Displays a centered spinner while fetching data from the API
+        Per PRD 3.2: Performance - Pagination helps ensure responsiveness
+      */}
       {loading && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <CircularProgress />
         </Box>
       )}
 
+      {/*
+        Load More Button
+        Per PRD 3.1.2: A "Load More" button loads the next 20 users at a time
+        Only shown when:
+        - Not currently loading
+        - More users are available (hasMore is true)
+        - At least some users have been loaded
+
+        Matches Figma design with light background and border
+      */}
       {!loading && hasMore && users.length > 0 && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <Button
@@ -503,6 +600,15 @@ export default function Customers() {
         </Box>
       )}
 
+      {/*
+        Edit User Modal
+        Per PRD 3.1.4: Clicking the Edit button opens a modal for editing user information
+        - Modal includes the name field (first and last name)
+        - Uses Helvetica font for name input
+        - Input fields are wide enough to display most names on a single line
+
+        Controlled by editModalOpen state and selectedUser data
+      */}
       <EditUserModal
         open={editModalOpen}
         user={selectedUser}
