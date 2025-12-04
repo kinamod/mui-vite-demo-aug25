@@ -12,9 +12,16 @@ import CrmUpcomingTasks from "./CrmUpcomingTasks";
 import CrmSalesChart from "./CrmSalesChart";
 import CrmLeadsBySourceChart from "./CrmLeadsBySourceChart";
 
+/**
+ * Base URL for the Users API
+ * Used to fetch the total number of customers
+ */
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
-// Sample data for other stat cards
+/**
+ * Static data for other dashboard stat cards (non-dynamic)
+ * These values are hardcoded for demonstration purposes
+ */
 const otherStatCardsData = [
   {
     title: "Deals Won",
@@ -52,23 +59,51 @@ const otherStatCardsData = [
 ];
 
 export default function CrmMainDashboard() {
+  // ============================================================================
+  // State for Total Customers (Dynamic from API)
+  // ============================================================================
+
+  /**
+   * Total number of customers from Users API
+   * Null while loading, number when fetched
+   */
   const [totalCustomers, setTotalCustomers] = React.useState<number | null>(
     null,
   );
+
+  /**
+   * Loading state for total customers API request
+   */
   const [loadingCustomers, setLoadingCustomers] = React.useState(true);
 
+  // ============================================================================
+  // Effects
+  // ============================================================================
+
+  /**
+   * Effect: Fetch total customer count from Users API on component mount
+   * Makes a minimal request (1 user per page) to get the total count
+   */
   React.useEffect(() => {
     const fetchTotalCustomers = async () => {
       try {
         setLoadingCustomers(true);
+
+        // Request just 1 user to minimize data transfer
+        // The API returns total count in the response metadata
         const response = await fetch(`${API_BASE_URL}/users?page=1&perPage=1`);
+
         if (!response.ok) {
           throw new Error("Failed to fetch total customers");
         }
+
         const data = await response.json();
+
+        // Extract total count from API response
         setTotalCustomers(data.total);
       } catch (error) {
         console.error("Error fetching total customers:", error);
+        // Set to 0 on error to avoid showing null/undefined
         setTotalCustomers(0);
       } finally {
         setLoadingCustomers(false);
@@ -106,9 +141,11 @@ export default function CrmMainDashboard() {
 
       {/* Stats Cards row */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
+        {/* Total Customers Card - Dynamic from Users API */}
         <Grid item xs={12} sm={6} lg={3}>
           <CrmStatCard
             title="Total Customers"
+            // Show loading indicator while fetching, then formatted number
             value={
               loadingCustomers
                 ? "..."
@@ -116,14 +153,16 @@ export default function CrmMainDashboard() {
             }
             interval="From Users API"
             trend="up"
-            trendValue="+15%"
+            trendValue="+15%" // Static trend value (could be made dynamic in future)
             data={[
+              // Sample chart data (could be made dynamic in future)
               200, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460,
               480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 720,
               740, 760, 780, 800,
             ]}
           />
         </Grid>
+        {/* Other stat cards with static data */}
         {otherStatCardsData.map((card, index) => (
           <Grid key={index} item xs={12} sm={6} lg={3}>
             <CrmStatCard
