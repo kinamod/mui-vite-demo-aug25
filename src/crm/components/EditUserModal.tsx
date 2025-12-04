@@ -71,8 +71,17 @@ export default function EditUserModal({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      {/* Modal header with title */}
       <DialogTitle>Edit User</DialogTitle>
+
+      {/* Main content area containing the form fields */}
       <DialogContent>
+        {/*
+          First Name input field
+          - Uses Helvetica font as specified in PRD section 3.1.4
+          - Has minWidth of 300px to display most names on a single line
+          - AutoFocus for better UX when modal opens
+        */}
         <TextField
           autoFocus
           margin="dense"
@@ -91,6 +100,12 @@ export default function EditUserModal({
             },
           }}
         />
+
+        {/*
+          Last Name input field
+          - Uses Helvetica font as specified in PRD section 3.1.4
+          - Has minWidth of 300px to display most names on a single line
+        */}
         <TextField
           margin="dense"
           label="Last Name"
@@ -107,10 +122,14 @@ export default function EditUserModal({
           }}
         />
       </DialogContent>
+
+      {/* Action buttons: Cancel and Save */}
       <DialogActions>
+        {/* Cancel button - closes modal without saving */}
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
+        {/* Save button - triggers the save callback with updated data */}
         <Button onClick={handleSave} variant="contained">
           Save
         </Button>
