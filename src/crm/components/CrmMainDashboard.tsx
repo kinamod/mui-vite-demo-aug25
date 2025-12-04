@@ -52,6 +52,32 @@ const otherStatCardsData = [
 ];
 
 export default function CrmMainDashboard() {
+  const [totalCustomers, setTotalCustomers] = React.useState<number | null>(
+    null,
+  );
+  const [loadingCustomers, setLoadingCustomers] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchTotalCustomers = async () => {
+      try {
+        setLoadingCustomers(true);
+        const response = await fetch(`${API_BASE_URL}/users?page=1&perPage=1`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch total customers");
+        }
+        const data = await response.json();
+        setTotalCustomers(data.total);
+      } catch (error) {
+        console.error("Error fetching total customers:", error);
+        setTotalCustomers(0);
+      } finally {
+        setLoadingCustomers(false);
+      }
+    };
+
+    fetchTotalCustomers();
+  }, []);
+
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       {/* Header with action buttons */}
