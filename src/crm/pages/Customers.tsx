@@ -73,65 +73,106 @@ export default function Customers() {
   });
   const [saveLoading, setSaveLoading] = React.useState(false);
 
+  // Number of users to fetch per page for pagination
   const perPage = 20;
+  // Base URL for the users API endpoint
   const API_BASE = "https://user-api.builder-io.workers.dev/api";
 
+  /**
+   * Fetches users from the API with pagination and search support
+   * @param pageNum - The page number to fetch (1-indexed)
+   * @param search - Optional search query to filter users by name, email, or city
+   * @param append - If true, appends results to existing users; if false, replaces them
+   */
   const fetchUsers = React.useCallback(
     async (pageNum: number, search: string, append = false) => {
+      // Set loading state to show spinner to user
       setLoading(true);
+      // Clear any previous errors before making new request
       setError(null);
 
       try {
+        // Build query parameters for the API request
+        // The API expects: page, perPage, and sortBy parameters
         const params = new URLSearchParams({
           page: pageNum.toString(),
           perPage: perPage.toString(),
-          sortBy: "name.first",
+          sortBy: "name.first", // Sort users alphabetically by first name
         });
 
+        // Add search parameter only if user has entered a search query
+        // This filters users by name, email, or city on the server side
         if (search.trim()) {
           params.append("search", search.trim());
         }
 
+        // Make GET request to fetch users from the API
+        // The params are automatically URL-encoded in the query string
         const response = await fetch(`${API_BASE}/users?${params}`);
+
+        // Check if the response was successful (status 200-299)
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
 
+        // Parse the JSON response body
         const data = await response.json();
-        
+
+        // Update users state based on append flag
+        // append=true: Add new users to existing list (for "Load More" functionality)
+        // append=false: Replace entire list (for new searches or initial load)
         if (append) {
           setUsers((prev) => [...prev, ...data.data]);
         } else {
           setUsers(data.data);
         }
 
+        // Determine if there are more users to load
+        // If we received fewer users than requested, we've reached the end
         setHasMore(data.data.length === perPage);
       } catch (err) {
+        // Handle any errors from the fetch operation or response parsing
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
+        // Always stop loading spinner, whether request succeeded or failed
         setLoading(false);
       }
     },
-    []
+    [] // Empty dependency array means this callback never changes
   );
 
+  // Fetch initial users when component mounts
   React.useEffect(() => {
     fetchUsers(1, searchQuery);
   }, []);
 
+  /**
+   * Handles search button click
+   * Resets to page 1 and fetches users matching the search query
+   */
   const handleSearch = () => {
     setPage(1);
     fetchUsers(1, searchQuery);
   };
 
+  /**
+   * Handles "Load More" button click
+   * Fetches the next page of users and appends them to the existing list
+   */
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
+    // Pass append=true to add new users to the existing list
     fetchUsers(nextPage, searchQuery, true);
   };
 
+  /**
+   * Opens the edit modal and populates form with selected user's data
+   * @param user - The user object to edit
+   */
   const handleEditClick = (user: User) => {
     setSelectedUser(user);
+    // Pre-fill the edit form with current user data
     setEditFormData({
       firstName: user.name.first,
       lastName: user.name.last,
@@ -142,11 +183,19 @@ export default function Customers() {
     setEditModalOpen(true);
   };
 
+  /**
+   * Closes the edit modal and clears selected user
+   */
   const handleCloseModal = () => {
     setEditModalOpen(false);
     setSelectedUser(null);
   };
 
+  /**
+   * Updates a single field in the edit form
+   * @param field - The field name to update
+   * @param value - The new value for the field
+   */
   const handleFormChange = (field: keyof EditFormData, value: string) => {
     setEditFormData((prev) => ({
       ...prev,
