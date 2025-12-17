@@ -56,14 +56,31 @@ interface EditFormData {
 }
 
 export default function Customers() {
+  // Array of user objects fetched from the API
   const [users, setUsers] = React.useState<User[]>([]);
+
+  // Loading state for the main user table fetch operations
   const [loading, setLoading] = React.useState(false);
+
+  // Error message to display if API requests fail
   const [error, setError] = React.useState<string | null>(null);
+
+  // Current search query entered by the user in the search field
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  // Current page number for pagination (1-indexed)
   const [page, setPage] = React.useState(1);
+
+  // Flag indicating whether there are more users to load
   const [hasMore, setHasMore] = React.useState(true);
+
+  // Controls visibility of the edit user modal dialog
   const [editModalOpen, setEditModalOpen] = React.useState(false);
+
+  // The user object currently being edited (null when no user is selected)
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
+
+  // Form data for the edit modal with editable user fields
   const [editFormData, setEditFormData] = React.useState<EditFormData>({
     firstName: "",
     lastName: "",
@@ -71,6 +88,8 @@ export default function Customers() {
     city: "",
     country: "",
   });
+
+  // Loading state specifically for the save operation in the edit modal
   const [saveLoading, setSaveLoading] = React.useState(false);
 
   // Number of users to fetch per page for pagination
