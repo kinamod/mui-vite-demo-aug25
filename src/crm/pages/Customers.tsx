@@ -1,3 +1,17 @@
+/**
+ * Customers Page Component
+ *
+ * This component displays a searchable, paginated table of customer/user data.
+ * It provides functionality to:
+ * - Fetch and display users from the users API
+ * - Search users by name, email, or city
+ * - Paginate through results with "Load More"
+ * - Edit user information via a modal dialog
+ * - Update users with optimistic UI updates
+ *
+ * The data is fetched from: https://user-api.builder-io.workers.dev/api/users
+ */
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -20,39 +34,47 @@ import DialogActions from "@mui/material/DialogActions";
 import Grid from "@mui/material/Grid";
 import EditIcon from "@mui/icons-material/Edit";
 
+/**
+ * User interface representing the complete user object from the API
+ * Includes login credentials, personal information, location data, and date of birth
+ */
 interface User {
   login: {
-    uuid: string;
-    username: string;
+    uuid: string;        // Unique identifier for the user
+    username: string;    // User's username
   };
   name: {
-    title: string;
-    first: string;
-    last: string;
+    title: string;       // Title (Mr, Ms, etc.)
+    first: string;       // First name
+    last: string;        // Last name
   };
-  email: string;
+  email: string;         // User's email address
   location: {
     street: {
-      number: number;
-      name: string;
+      number: number;    // Street number
+      name: string;      // Street name
     };
-    city: string;
-    state: string;
-    country: string;
-    postcode: string;
+    city: string;        // City name
+    state: string;       // State/province
+    country: string;     // Country name
+    postcode: string;    // Postal code
   };
   dob: {
-    date: string;
-    age: number;
+    date: string;        // Date of birth (ISO format)
+    age: number;         // Calculated age
   };
 }
 
+/**
+ * EditFormData interface for the edit modal form
+ * Contains only the fields that users are allowed to edit
+ */
 interface EditFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  city: string;
-  country: string;
+  firstName: string;     // User's first name
+  lastName: string;      // User's last name
+  email: string;         // User's email address
+  city: string;          // User's city
+  country: string;       // User's country
 }
 
 export default function Customers() {
