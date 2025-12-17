@@ -249,6 +249,7 @@ export default function Customers() {
             bgcolor: "#05070A",
             color: "white",
             textTransform: "none",
+            fontSize: "34px",
             px: 3,
             "&:hover": {
               bgcolor: "#0B0E14",
