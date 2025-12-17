@@ -203,11 +203,19 @@ export default function Customers() {
     }));
   };
 
+  /**
+   * Saves the edited user data to the API and updates the local state
+   * Makes a PUT request to update the user, then updates the UI optimistically
+   */
   const handleSaveUser = async () => {
+    // Guard clause: don't proceed if no user is selected
     if (!selectedUser) return;
 
+    // Show loading state on the save button
     setSaveLoading(true);
     try {
+      // Send PUT request to update user by UUID
+      // The API expects partial user data to update specific fields
       const response = await fetch(
         `${API_BASE}/users/${selectedUser.login.uuid}`,
         {
@@ -215,6 +223,7 @@ export default function Customers() {
           headers: {
             "Content-Type": "application/json",
           },
+          // Send only the fields that can be edited in the form
           body: JSON.stringify({
             name: {
               first: editFormData.firstName,
@@ -229,14 +238,19 @@ export default function Customers() {
         }
       );
 
+      // Check if update was successful
       if (!response.ok) {
         throw new Error("Failed to update user");
       }
 
+      // Update the local users array with the edited data
+      // This provides immediate feedback without refetching all users
       setUsers((prev) =>
         prev.map((user) =>
+          // Find the user by UUID and update their data
           user.login.uuid === selectedUser.login.uuid
             ? {
+                // Spread existing user data to preserve unchanged fields
                 ...user,
                 name: {
                   ...user.name,
@@ -250,14 +264,17 @@ export default function Customers() {
                   country: editFormData.country,
                 },
               }
-            : user
+            : user // Return unchanged for all other users
         )
       );
 
+      // Close the modal after successful save
       handleCloseModal();
     } catch (err) {
+      // Display error message to user if save fails
       setError(err instanceof Error ? err.message : "Failed to save user");
     } finally {
+      // Always stop the loading state, regardless of success or failure
       setSaveLoading(false);
     }
   };
