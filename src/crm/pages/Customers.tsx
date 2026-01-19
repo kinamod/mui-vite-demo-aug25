@@ -1,3 +1,16 @@
+/**
+ * Customers Page Component
+ *
+ * This component displays a searchable, paginated table of users fetched from
+ * the Users API. It allows editing user details through a modal interface.
+ *
+ * Features:
+ * - Display 20 users per page with pagination
+ * - Search users by name, email, or city
+ * - Edit user names through a modal dialog
+ * - Responsive table layout matching Figma design
+ */
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -19,6 +32,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import { styled } from "@mui/material/styles";
 
+// Base URL for the Users API
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
 interface UserName {
