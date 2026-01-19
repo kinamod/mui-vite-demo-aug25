@@ -35,12 +35,19 @@ import { styled } from "@mui/material/styles";
 // Base URL for the Users API
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
+/**
+ * Type Definitions
+ * These interfaces match the structure returned by the Users API
+ */
+
+/** User name structure with title, first name, and last name */
 interface UserName {
   title: string;
   first: string;
   last: string;
 }
 
+/** User location details including street, city, state, country */
 interface UserLocation {
   street: {
     number: number;
@@ -52,11 +59,13 @@ interface UserLocation {
   postcode: string;
 }
 
+/** User date of birth information */
 interface UserDob {
   date: string;
   age: number;
 }
 
+/** Complete user object structure from API */
 interface User {
   login: {
     uuid: string;
@@ -69,6 +78,7 @@ interface User {
   gender: string;
 }
 
+/** API response structure for paginated user list */
 interface ApiResponse {
   page: number;
   perPage: number;
