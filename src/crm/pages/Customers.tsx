@@ -357,6 +357,7 @@ export default function Customers() {
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+      {/* Page Title */}
       <Typography
         variant="h4"
         component="h1"
@@ -370,6 +371,7 @@ export default function Customers() {
         Customers
       </Typography>
 
+      {/* Section Title */}
       <Typography
         variant="h5"
         component="h2"
@@ -383,12 +385,14 @@ export default function Customers() {
         Users
       </Typography>
 
+      {/* Error Alert - displayed when API requests fail */}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
+      {/* Search Bar with Input and Button */}
       <SearchContainer>
         <TextField
           placeholder="Search users by name, email, or city"
