@@ -178,31 +178,52 @@ const HelveticaTextField = styled(TextField)({
 });
 
 export default function Customers() {
+  // State Management
+  /** List of users currently displayed in the table */
   const [users, setUsers] = React.useState<User[]>([]);
+  /** Loading state for API requests */
   const [loading, setLoading] = React.useState(false);
+  /** Error message to display if API requests fail */
   const [error, setError] = React.useState<string | null>(null);
+  /** Current search query from the search input */
   const [searchQuery, setSearchQuery] = React.useState("");
+  /** Current page number for pagination */
   const [currentPage, setCurrentPage] = React.useState(1);
+  /** Total number of users available from the API */
   const [totalUsers, setTotalUsers] = React.useState(0);
+  /** Controls visibility of the edit user modal */
   const [editModalOpen, setEditModalOpen] = React.useState(false);
+  /** User currently being edited in the modal */
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
+  /** First name value in edit form */
   const [editFirstName, setEditFirstName] = React.useState("");
+  /** Last name value in edit form */
   const [editLastName, setEditLastName] = React.useState("");
+  /** Loading state for save operation in modal */
   const [saving, setSaving] = React.useState(false);
 
+  /** Number of users to fetch per page (PRD requirement: 20) */
   const perPage = 20;
 
+  /**
+   * Fetches users from the API with pagination and search support
+   * @param page - Page number to fetch
+   * @param search - Optional search query to filter users
+   * @param append - If true, appends results to existing users (for Load More)
+   */
   const fetchUsers = React.useCallback(
     async (page: number, search: string = "", append: boolean = false) => {
       setLoading(true);
       setError(null);
 
       try {
+        // Build query parameters for API request
         const params = new URLSearchParams({
           page: page.toString(),
           perPage: perPage.toString(),
         });
 
+        // Add search parameter if provided
         if (search) {
           params.append("search", search);
         }
@@ -215,6 +236,7 @@ export default function Customers() {
 
         const data: ApiResponse = await response.json();
 
+        // Either append to existing users or replace them
         if (append) {
           setUsers((prev) => [...prev, ...data.data]);
         } else {
@@ -231,21 +253,34 @@ export default function Customers() {
     []
   );
 
+  // Fetch initial users on component mount
   React.useEffect(() => {
     fetchUsers(1);
   }, [fetchUsers]);
 
+  /**
+   * Handles search button click or Enter key press
+   * Resets to page 1 and fetches users matching the search query
+   */
   const handleSearch = () => {
     setCurrentPage(1);
     fetchUsers(1, searchQuery, false);
   };
 
+  /**
+   * Handles Load More button click
+   * Fetches the next page and appends results to current list
+   */
   const handleLoadMore = () => {
     const nextPage = currentPage + 1;
     setCurrentPage(nextPage);
     fetchUsers(nextPage, searchQuery, true);
   };
 
+  /**
+   * Opens the edit modal and populates it with user data
+   * @param user - The user to edit
+   */
   const handleEditClick = (user: User) => {
     setSelectedUser(user);
     setEditFirstName(user.name.first);
@@ -253,6 +288,9 @@ export default function Customers() {
     setEditModalOpen(true);
   };
 
+  /**
+   * Closes the edit modal and resets form state
+   */
   const handleCloseModal = () => {
     setEditModalOpen(false);
     setSelectedUser(null);
@@ -260,6 +298,10 @@ export default function Customers() {
     setEditLastName("");
   };
 
+  /**
+   * Saves the edited user data to the API
+   * Updates local state on success to reflect changes immediately
+   */
   const handleSaveUser = async () => {
     if (!selectedUser) return;
 
@@ -286,7 +328,7 @@ export default function Customers() {
         throw new Error("Failed to update user");
       }
 
-      // Update local state
+      // Update local state to reflect changes without refetching
       setUsers((prev) =>
         prev.map((user) =>
           user.login.uuid === selectedUser.login.uuid
@@ -310,6 +352,7 @@ export default function Customers() {
     }
   };
 
+  /** Determines if there are more users to load */
   const hasMoreUsers = users.length < totalUsers;
 
   return (
