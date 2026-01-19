@@ -86,6 +86,12 @@ interface ApiResponse {
   data: User[];
 }
 
+/**
+ * Styled Components
+ * Custom styled MUI components matching the Figma design specifications
+ */
+
+/** Container for search input and button with flexbox layout */
 const SearchContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   gap: theme.spacing(1),
@@ -93,6 +99,7 @@ const SearchContainer = styled(Box)(({ theme }) => ({
   alignItems: "stretch",
 }));
 
+/** Styled table container with custom background and border styles from Figma */
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   backgroundColor: "#F5F6FA",
   borderRadius: theme.spacing(1),
@@ -112,6 +119,7 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   },
 }));
 
+/** Custom dark search button with gradient background matching Figma design */
 const SearchButton = styled(Button)(({ theme }) => ({
   background: "linear-gradient(0deg, #05070A 0%, #05070A 100%), linear-gradient(0deg, #0B0E14 0%, #0B0E14 100%)",
   backgroundColor: "#05070A",
@@ -131,6 +139,7 @@ const SearchButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+/** Edit icon button for each user row in the table */
 const EditButton = styled(IconButton)(({ theme }) => ({
   width: "40px",
   height: "40px",
@@ -142,6 +151,7 @@ const EditButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+/** Load More button for pagination at the bottom of the table */
 const LoadMoreButton = styled(Button)(({ theme }) => ({
   width: "107px",
   height: "40px",
@@ -157,6 +167,10 @@ const LoadMoreButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+/**
+ * TextField with Helvetica font family
+ * Required by PRD for name input fields in the edit modal
+ */
 const HelveticaTextField = styled(TextField)({
   "& .MuiInputBase-input": {
     fontFamily: "Helvetica, Arial, sans-serif",
