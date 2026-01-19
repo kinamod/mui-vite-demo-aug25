@@ -394,6 +394,7 @@ export default function Customers() {
 
       {/* Search Bar with Input and Button */}
       <SearchContainer>
+        {/* Search Input - supports Enter key for search */}
         <TextField
           placeholder="Search users by name, email, or city"
           variant="outlined"
@@ -422,13 +423,16 @@ export default function Customers() {
             },
           }}
         />
+        {/* Search Button - matches Figma dark design */}
         <SearchButton onClick={handleSearch} disabled={loading}>
           Search
         </SearchButton>
       </SearchContainer>
 
+      {/* Users Table - displays user data with columns matching PRD requirements */}
       <StyledTableContainer>
         <Table>
+          {/* Table Header with column names */}
           <TableHead>
             <TableRow>
               <TableCell sx={{ width: "215px" }}>Name</TableCell>
@@ -443,7 +447,9 @@ export default function Customers() {
               </TableCell>
             </TableRow>
           </TableHead>
+          {/* Table Body - displays user rows or loading/empty states */}
           <TableBody>
+            {/* Loading State - shown when fetching initial data */}
             {loading && users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
@@ -451,12 +457,14 @@ export default function Customers() {
                 </TableCell>
               </TableRow>
             ) : users.length === 0 ? (
+              /* Empty State - shown when no users match search */
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                   No users found
                 </TableCell>
               </TableRow>
             ) : (
+              /* User Rows - displays each user with their data and edit button */
               users.map((user) => (
                 <TableRow key={user.login.uuid}>
                   <TableCell>
@@ -469,6 +477,7 @@ export default function Customers() {
                     {user.dob.age}
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
+                    {/* Edit Button - opens modal for editing user */}
                     <EditButton
                       onClick={() => handleEditClick(user)}
                       aria-label="Edit user"
@@ -483,6 +492,7 @@ export default function Customers() {
         </Table>
       </StyledTableContainer>
 
+      {/* Load More Button - shown when there are more users to load */}
       {hasMoreUsers && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <LoadMoreButton onClick={handleLoadMore} disabled={loading}>
@@ -491,7 +501,7 @@ export default function Customers() {
         </Box>
       )}
 
-      {/* Edit User Modal */}
+      {/* Edit User Modal - allows editing first and last name */}
       <Dialog
         open={editModalOpen}
         onClose={handleCloseModal}
@@ -501,6 +511,7 @@ export default function Customers() {
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+            {/* First Name Input - uses Helvetica font as per PRD requirement */}
             <HelveticaTextField
               label="First Name"
               value={editFirstName}
@@ -508,10 +519,11 @@ export default function Customers() {
               fullWidth
               sx={{
                 "& .MuiInputBase-root": {
-                  minWidth: "300px",
+                  minWidth: "300px", // PRD requirement: wide enough for most names
                 },
               }}
             />
+            {/* Last Name Input - uses Helvetica font as per PRD requirement */}
             <HelveticaTextField
               label="Last Name"
               value={editLastName}
@@ -519,16 +531,18 @@ export default function Customers() {
               fullWidth
               sx={{
                 "& .MuiInputBase-root": {
-                  minWidth: "300px",
+                  minWidth: "300px", // PRD requirement: wide enough for most names
                 },
               }}
             />
           </Box>
         </DialogContent>
         <DialogActions>
+          {/* Cancel Button - closes modal without saving */}
           <Button onClick={handleCloseModal} disabled={saving}>
             Cancel
           </Button>
+          {/* Save Button - submits changes to API */}
           <Button
             onClick={handleSaveUser}
             variant="contained"
