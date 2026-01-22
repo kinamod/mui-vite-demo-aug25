@@ -11,6 +11,15 @@ import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import { User, updateUser } from "../services/usersApi";
 
+/**
+ * Props interface for the EditUserModal component
+ *
+ * @interface EditUserModalProps
+ * @property {boolean} open - Controls the visibility of the modal dialog
+ * @property {function} onClose - Callback function invoked when the modal should be closed
+ * @property {User | null} user - The user object to be edited. Null if no user is selected.
+ * @property {function} onUserUpdated - Callback function invoked after a user is successfully updated
+ */
 interface EditUserModalProps {
   open: boolean;
   onClose: () => void;
@@ -18,24 +27,53 @@ interface EditUserModalProps {
   onUserUpdated: () => void;
 }
 
+/**
+ * EditUserModal Component
+ *
+ * A modal dialog component for editing user information. Displays a form with
+ * editable fields for the user's first name, last name, email, city, and country.
+ *
+ * Features:
+ * - Form validation (required fields for name and email)
+ * - Loading state during API calls
+ * - Error and success message display
+ * - Automatic form population when user prop changes
+ * - Name fields use Helvetica font as per PRD requirements
+ * - Auto-closes modal after successful update
+ *
+ * @component
+ * @param {EditUserModalProps} props - Component props
+ * @returns {JSX.Element | null} The modal component or null if no user is selected
+ */
 export default function EditUserModal({
   open,
   onClose,
   user,
   onUserUpdated,
 }: EditUserModalProps) {
+  // Loading state to disable form during API calls
   const [loading, setLoading] = React.useState(false);
+
+  // Error state to display error messages from failed API calls
   const [error, setError] = React.useState<string | null>(null);
+
+  // Success state to display success message after user update
   const [success, setSuccess] = React.useState(false);
 
-  // Form state
+  // Form state - stores the editable user information
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [city, setCity] = React.useState("");
   const [country, setCountry] = React.useState("");
 
-  // Initialize form when user changes
+  /**
+   * Effect: Initialize form fields when user prop changes
+   *
+   * Populates the form fields with the current user's data whenever
+   * a new user is selected for editing. This ensures the form always
+   * displays the most up-to-date user information.
+   */
   React.useEffect(() => {
     if (user) {
       setFirstName(user.name.first || "");
@@ -46,7 +84,12 @@ export default function EditUserModal({
     }
   }, [user]);
 
-  // Reset form when modal closes
+  /**
+   * Effect: Reset error and success states when modal closes
+   *
+   * Clears any error or success messages when the modal is closed
+   * to ensure a clean state when the modal is reopened.
+   */
   React.useEffect(() => {
     if (!open) {
       setError(null);
