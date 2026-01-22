@@ -20,7 +20,7 @@ import EditUserModal from "../components/EditUserModal";
 
 export default function Customers() {
   const [users, setUsers] = React.useState<User[]>([]);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [searchInput, setSearchInput] = React.useState("");
@@ -39,11 +39,14 @@ export default function Customers() {
       setError(null);
 
       try {
+        console.log("Fetching users...", { currentPage, searchQuery });
         const response = await fetchUsers({
           page: currentPage,
           perPage: 20,
           search: searchQuery,
         });
+
+        console.log("Users fetched:", response);
 
         if (append) {
           setUsers((prev) => [...prev, ...response.data]);
@@ -54,6 +57,7 @@ export default function Customers() {
         setTotal(response.total);
         setHasMore(response.data.length === 20);
       } catch (err) {
+        console.error("Error loading users:", err);
         setError(err instanceof Error ? err.message : "Failed to load users");
       } finally {
         setLoading(false);
@@ -64,6 +68,7 @@ export default function Customers() {
 
   // Load initial data
   React.useEffect(() => {
+    console.log("Component mounted, loading users...");
     loadUsers(1, false);
   }, [loadUsers]);
 
