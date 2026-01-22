@@ -135,35 +135,84 @@ export interface UsersQueryParams {
 
 /**
  * Fetch users from the Users API with pagination and search
+ *
+ * This is the primary function for retrieving user data. It supports:
+ * - Pagination with customizable page size
+ * - Search filtering by name, email, or city
+ * - Sorting by various fields
+ *
+ * @param {UsersQueryParams} params - Optional query parameters
+ * @param {number} params.page - Page number (1-indexed, default: 1)
+ * @param {number} params.perPage - Results per page (default: 20)
+ * @param {string} params.search - Search query string (filters by name, email, city)
+ * @param {string} params.sortBy - Field to sort by (default: "name.first")
+ *
+ * @returns {Promise<UsersResponse>} Response object containing users array and pagination info
+ * @throws {Error} If the API request fails
+ *
+ * @example
+ * ```typescript
+ * // Fetch first page with default settings
+ * const response = await fetchUsers();
+ *
+ * // Fetch with search
+ * const response = await fetchUsers({ search: "john", page: 1, perPage: 20 });
+ * ```
  */
 export async function fetchUsers(
   params: UsersQueryParams = {},
 ): Promise<UsersResponse> {
+  // Destructure parameters with defaults
   const { page = 1, perPage = 20, search = "", sortBy = "name.first" } = params;
 
+  // Build query parameters for the URL
   const queryParams = new URLSearchParams({
     page: page.toString(),
     perPage: perPage.toString(),
     sortBy,
   });
 
+  // Only add search parameter if it's not empty
   if (search) {
     queryParams.append("search", search);
   }
 
+  // Construct the full API URL
   const url = `${API_BASE_URL}/users?${queryParams.toString()}`;
 
+  // Make the API request
   const response = await fetch(url);
 
+  // Check if the request was successful
   if (!response.ok) {
     throw new Error(`Failed to fetch users: ${response.statusText}`);
   }
 
+  // Parse and return the JSON response
   return response.json();
 }
 
 /**
  * Get a single user by UUID, username, or email
+ *
+ * Retrieves detailed information for a specific user using any of their
+ * unique identifiers.
+ *
+ * @param {string} id - User's UUID, username, or email address
+ * @returns {Promise<User>} The complete user object
+ * @throws {Error} If the user is not found or the API request fails
+ *
+ * @example
+ * ```typescript
+ * // Fetch by UUID
+ * const user = await fetchUser("5ed11219-7df8-4f14-b55e-bbcab4030f0a");
+ *
+ * // Fetch by username
+ * const user = await fetchUser("johndoe");
+ *
+ * // Fetch by email
+ * const user = await fetchUser("john@example.com");
+ * ```
  */
 export async function fetchUser(id: string): Promise<User> {
   const url = `${API_BASE_URL}/users/${id}`;
@@ -179,6 +228,28 @@ export async function fetchUser(id: string): Promise<User> {
 
 /**
  * Update a user's information
+ *
+ * Updates one or more fields of an existing user. Only the provided fields
+ * will be updated; other fields remain unchanged.
+ *
+ * @param {string} id - User's UUID, username, or email address
+ * @param {Partial<User>} data - Object containing the fields to update
+ * @returns {Promise<{success: boolean, message: string}>} Success status and message
+ * @throws {Error} If the update fails or user is not found
+ *
+ * @example
+ * ```typescript
+ * // Update user's name
+ * await updateUser("johndoe", {
+ *   name: { first: "John", last: "Doe", title: "Mr" }
+ * });
+ *
+ * // Update multiple fields
+ * await updateUser("johndoe", {
+ *   email: "newemail@example.com",
+ *   location: { ...location, city: "New York" }
+ * });
+ * ```
  */
 export async function updateUser(
   id: string,
@@ -203,6 +274,28 @@ export async function updateUser(
 
 /**
  * Create a new user
+ *
+ * Creates a new user in the system. Required fields are:
+ * - email
+ * - login.username
+ * - name.first
+ * - name.last
+ *
+ * @param {Partial<User>} data - User data object (must include required fields)
+ * @returns {Promise<{success: boolean, uuid: string, message: string}>}
+ *   Success status, generated UUID, and message
+ * @throws {Error} If required fields are missing or creation fails
+ *
+ * @example
+ * ```typescript
+ * const result = await createUser({
+ *   email: "newuser@example.com",
+ *   login: { username: "newuser" },
+ *   name: { first: "New", last: "User", title: "Mr" },
+ *   gender: "male"
+ * });
+ * console.log(result.uuid); // Generated UUID for the new user
+ * ```
  */
 export async function createUser(
   data: Partial<User>,
@@ -226,6 +319,19 @@ export async function createUser(
 
 /**
  * Delete a user
+ *
+ * Permanently removes a user from the system.
+ * This action cannot be undone.
+ *
+ * @param {string} id - User's UUID, username, or email address
+ * @returns {Promise<{success: boolean, message: string}>} Success status and message
+ * @throws {Error} If the user is not found or deletion fails
+ *
+ * @example
+ * ```typescript
+ * await deleteUser("johndoe");
+ * // User is permanently deleted
+ * ```
  */
 export async function deleteUser(
   id: string,
