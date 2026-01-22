@@ -304,19 +304,33 @@ export default function Customers() {
         </Alert>
       )}
 
-      {/* Users Table */}
+      {/*
+        Users Table
+        Implements PRD section 3.1.2 table display requirements
+        - Displays user data in table format with Name, Email, City, Country, Age, and Actions columns
+        - Uses Figma design colors: #F5F6FA background, #FCFCFC header background
+        - Border styling matches Figma design with 0.5px solid borders
+        - Rounded corners (8px) for modern appearance
+      */}
       <Paper
         sx={{
           width: "100%",
           borderRadius: "8px",
           overflow: "hidden",
-          backgroundColor: "#F5F6FA",
+          backgroundColor: "#F5F6FA", // Matches Figma design background color
         }}
       >
         <TableContainer>
           <Table sx={{ minWidth: 650 }} aria-label="users table">
+            {/*
+              Table Header
+              - Fixed header with column labels
+              - Lighter background (#FCFCFC) to distinguish from data rows
+              - Font weight 500 for emphasis
+            */}
             <TableHead>
               <TableRow sx={{ backgroundColor: "#FCFCFC" }}>
+                {/* Name column */}
                 <TableCell
                   sx={{
                     fontWeight: 500,
@@ -326,6 +340,8 @@ export default function Customers() {
                 >
                   Name
                 </TableCell>
+
+                {/* Email column */}
                 <TableCell
                   sx={{
                     fontWeight: 500,
@@ -335,6 +351,8 @@ export default function Customers() {
                 >
                   Email
                 </TableCell>
+
+                {/* City column */}
                 <TableCell
                   sx={{
                     fontWeight: 500,
@@ -344,6 +362,8 @@ export default function Customers() {
                 >
                   City
                 </TableCell>
+
+                {/* Country column */}
                 <TableCell
                   sx={{
                     fontWeight: 500,
@@ -353,6 +373,8 @@ export default function Customers() {
                 >
                   Country
                 </TableCell>
+
+                {/* Age column - right aligned for better readability of numbers */}
                 <TableCell
                   align="right"
                   sx={{
@@ -363,6 +385,8 @@ export default function Customers() {
                 >
                   Age
                 </TableCell>
+
+                {/* Actions column - center aligned for edit button */}
                 <TableCell
                   align="center"
                   sx={{
@@ -375,6 +399,8 @@ export default function Customers() {
                 </TableCell>
               </TableRow>
             </TableHead>
+
+            {/* Table Body - displays user data or loading/empty states */}
             <TableBody>
               {loading && users.length === 0 ? (
                 <TableRow>
