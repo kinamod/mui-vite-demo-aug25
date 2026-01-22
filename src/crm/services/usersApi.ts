@@ -19,6 +19,10 @@
 // API Base URL - hosted on Cloudflare Workers
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
+/**
+ * User Location Interface
+ * Contains address and geographical information for a user
+ */
 export interface UserLocation {
   street: {
     number: number;
@@ -38,63 +42,95 @@ export interface UserLocation {
   };
 }
 
+/**
+ * User Name Interface
+ * Contains the user's title and full name
+ */
 export interface UserName {
-  title: string;
-  first: string;
-  last: string;
+  title: string; // e.g., "Mr", "Ms", "Mrs", "Dr"
+  first: string; // First name
+  last: string; // Last name
 }
 
+/**
+ * User Login Interface
+ * Contains authentication and identification information
+ */
 export interface UserLogin {
-  uuid: string;
-  username: string;
-  password?: string;
+  uuid: string; // Unique identifier for the user
+  username: string; // Username for login
+  password?: string; // Password (optional, usually not returned from API)
 }
 
+/**
+ * User Date of Birth Interface
+ * Contains birth date and calculated age
+ */
 export interface UserDob {
-  date: string;
-  age: number;
+  date: string; // ISO date string
+  age: number; // Calculated age in years
 }
 
+/**
+ * User Registration Interface
+ * Contains registration date and account age
+ */
 export interface UserRegistered {
-  date: string;
-  age: number;
+  date: string; // ISO date string when user registered
+  age: number; // Account age in years
 }
 
+/**
+ * User Picture Interface
+ * Contains URLs to different sizes of user profile pictures
+ */
 export interface UserPicture {
-  large: string;
-  medium: string;
-  thumbnail: string;
+  large: string; // URL to large profile picture
+  medium: string; // URL to medium profile picture
+  thumbnail: string; // URL to thumbnail profile picture
 }
 
+/**
+ * Main User Interface
+ * Represents a complete user object from the Users API
+ */
 export interface User {
-  login: UserLogin;
-  name: UserName;
-  gender: string;
-  location: UserLocation;
-  email: string;
-  dob: UserDob;
-  registered: UserRegistered;
-  phone: string;
-  cell: string;
-  picture: UserPicture;
-  nat: string;
+  login: UserLogin; // Login and identification info
+  name: UserName; // User's full name
+  gender: string; // Gender (e.g., "male", "female")
+  location: UserLocation; // Address and location info
+  email: string; // Email address
+  dob: UserDob; // Date of birth and age
+  registered: UserRegistered; // Registration date and account age
+  phone: string; // Phone number
+  cell: string; // Mobile/cell phone number
+  picture: UserPicture; // Profile picture URLs
+  nat: string; // Nationality code
 }
 
+/**
+ * Users API Response Interface
+ * Structure of the response when fetching a list of users
+ */
 export interface UsersResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  span: string;
-  effectivePage: number;
-  data: User[];
+  page: number; // Current page number
+  perPage: number; // Number of items per page
+  total: number; // Total number of users matching the query
+  span: string; // Time span filter ("week" or "month")
+  effectivePage: number; // Actual page returned (may differ from requested)
+  data: User[]; // Array of user objects
 }
 
+/**
+ * Users Query Parameters Interface
+ * Optional parameters for filtering and paginating user queries
+ */
 export interface UsersQueryParams {
-  page?: number;
-  perPage?: number;
-  search?: string;
-  sortBy?: string;
-  span?: "week" | "month";
+  page?: number; // Page number (default: 1)
+  perPage?: number; // Results per page (default: 10, we use 20)
+  search?: string; // Search query for filtering by name, email, or city
+  sortBy?: string; // Field to sort by (e.g., "name.first", "dob.age")
+  span?: "week" | "month"; // Time span view
 }
 
 /**
