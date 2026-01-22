@@ -167,6 +167,7 @@ export default function EditUserModal({
   // Don't render the modal if no user is selected
   if (!user) return null;
 
+  // Render the modal dialog with form
   return (
     <Dialog
       open={open}
@@ -175,15 +176,28 @@ export default function EditUserModal({
       fullWidth
       aria-labelledby="edit-user-dialog-title"
     >
+      {/* Modal title */}
       <DialogTitle id="edit-user-dialog-title">Edit User</DialogTitle>
+
+      {/* Form wrapped around dialog content for proper submission handling */}
       <form onSubmit={handleSubmit}>
         <DialogContent>
+          {/* Stack component for vertical spacing between form elements */}
           <Stack spacing={3} sx={{ mt: 1 }}>
+            {/* Error alert - only shown when there's an error */}
             {error && <Alert severity="error">{error}</Alert>}
+
+            {/* Success alert - only shown after successful update */}
             {success && (
               <Alert severity="success">User updated successfully!</Alert>
             )}
 
+            {/*
+              First Name field
+              - Required field as per PRD
+              - Uses Helvetica font as specified in PRD section 3.1.4
+              - Minimum width of 300px to display most names on a single line
+            */}
             <TextField
               label="First Name"
               value={firstName}
@@ -199,6 +213,12 @@ export default function EditUserModal({
               }}
             />
 
+            {/*
+              Last Name field
+              - Required field as per PRD
+              - Uses Helvetica font as specified in PRD section 3.1.4
+              - Minimum width of 300px to display most names on a single line
+            */}
             <TextField
               label="Last Name"
               value={lastName}
@@ -214,6 +234,11 @@ export default function EditUserModal({
               }}
             />
 
+            {/*
+              Email field
+              - Required field as per PRD
+              - Type="email" provides browser-level validation
+            */}
             <TextField
               label="Email"
               type="email"
@@ -224,6 +249,7 @@ export default function EditUserModal({
               disabled={loading}
             />
 
+            {/* City field - Optional field */}
             <TextField
               label="City"
               value={city}
@@ -232,6 +258,7 @@ export default function EditUserModal({
               disabled={loading}
             />
 
+            {/* Country field - Optional field */}
             <TextField
               label="Country"
               value={country}
@@ -241,10 +268,20 @@ export default function EditUserModal({
             />
           </Stack>
         </DialogContent>
+
+        {/* Dialog action buttons - Cancel and Save */}
         <DialogActions sx={{ px: 3, pb: 2 }}>
+          {/* Cancel button - closes modal without saving */}
           <Button onClick={onClose} disabled={loading}>
             Cancel
           </Button>
+
+          {/*
+            Save button
+            - Submits the form (type="submit")
+            - Shows loading spinner when API call is in progress
+            - Disabled during loading to prevent duplicate submissions
+          */}
           <Button
             type="submit"
             variant="contained"
