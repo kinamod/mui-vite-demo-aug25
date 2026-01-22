@@ -97,48 +97,74 @@ export default function EditUserModal({
     }
   }, [open]);
 
+  /**
+   * Handles form submission for updating user information
+   *
+   * Process:
+   * 1. Prevents default form submission behavior
+   * 2. Validates that a user is selected
+   * 3. Sets loading state and clears previous errors/success messages
+   * 4. Constructs updated user data object with form values
+   * 5. Calls the updateUser API function
+   * 6. On success: displays success message and closes modal after 1 second
+   * 7. On error: displays error message
+   * 8. Finally: clears loading state
+   *
+   * @param {React.FormEvent} e - The form submission event
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (e: React.FormEvent) => {
+    // Prevent default form submission that would reload the page
     e.preventDefault();
 
+    // Safety check: ensure a user is selected
     if (!user) return;
 
+    // Set loading state and reset error/success states
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
+      // Construct the updated user data object
+      // Only includes fields that can be edited in this form
       const updatedData: Partial<User> = {
         name: {
-          title: user.name.title,
+          title: user.name.title, // Preserve the original title
           first: firstName,
           last: lastName,
         },
         email,
         location: {
-          ...user.location,
+          ...user.location, // Preserve other location fields (street, postcode, etc.)
           city,
           country,
         },
       };
 
+      // Call the API to update the user
       await updateUser(user.login.uuid, updatedData);
 
+      // Show success message
       setSuccess(true);
 
-      // Close modal after a short delay to show success message
+      // Close modal after a short delay to allow user to see the success message
       setTimeout(() => {
-        onUserUpdated();
-        onClose();
+        onUserUpdated(); // Notify parent component to refresh user list
+        onClose(); // Close the modal
       }, 1000);
     } catch (err) {
+      // Display error message if the update fails
       setError(
         err instanceof Error ? err.message : "Failed to update user",
       );
     } finally {
+      // Always clear loading state, whether successful or not
       setLoading(false);
     }
   };
 
+  // Don't render the modal if no user is selected
   if (!user) return null;
 
   return (
