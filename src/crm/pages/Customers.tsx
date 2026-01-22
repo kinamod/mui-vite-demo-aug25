@@ -400,15 +400,31 @@ export default function Customers() {
               </TableRow>
             </TableHead>
 
-            {/* Table Body - displays user data or loading/empty states */}
+            {/*
+              Table Body - displays user data or loading/empty states
+              Uses conditional rendering to show different content based on data state:
+              1. Loading spinner when initially loading data
+              2. "No users found" message when no data is available
+              3. User rows when data is loaded
+            */}
             <TableBody>
+              {/*
+                Loading State
+                Shows a centered circular progress indicator while fetching initial data
+                Only shown when loading AND no users are loaded yet
+                Spans all 6 columns for proper alignment
+              */}
               {loading && users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
                     <CircularProgress />
                   </TableCell>
                 </TableRow>
-              ) : users.length === 0 ? (
+              ) : /*
+                Empty State
+                Shows when no users match the search criteria or when there's no data
+                Displays a helpful message to inform the user
+              */ users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
                     <Typography color="text.secondary">
@@ -417,15 +433,22 @@ export default function Customers() {
                   </TableCell>
                 </TableRow>
               ) : (
+                /*
+                  User Rows
+                  Maps through the users array to create a row for each user
+                  Each row represents a single user as per PRD section 3.1.2
+                  Includes hover effect for better UX
+                */
                 users.map((user) => (
                   <TableRow
                     key={user.login.uuid}
                     sx={{
                       "&:hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.02)",
+                        backgroundColor: "rgba(0, 0, 0, 0.02)", // Subtle hover effect
                       },
                     }}
                   >
+                    {/* Name Cell - displays first and last name */}
                     <TableCell
                       sx={{
                         borderBottom: "0.5px solid #0B0E14",
@@ -434,6 +457,8 @@ export default function Customers() {
                     >
                       {user.name.first} {user.name.last}
                     </TableCell>
+
+                    {/* Email Cell */}
                     <TableCell
                       sx={{
                         borderBottom: "0.5px solid #0B0E14",
@@ -442,6 +467,8 @@ export default function Customers() {
                     >
                       {user.email}
                     </TableCell>
+
+                    {/* City Cell */}
                     <TableCell
                       sx={{
                         borderBottom: "0.5px solid #0B0E14",
@@ -450,6 +477,8 @@ export default function Customers() {
                     >
                       {user.location.city}
                     </TableCell>
+
+                    {/* Country Cell */}
                     <TableCell
                       sx={{
                         borderBottom: "0.5px solid #0B0E14",
@@ -458,6 +487,8 @@ export default function Customers() {
                     >
                       {user.location.country}
                     </TableCell>
+
+                    {/* Age Cell - right aligned for better number readability */}
                     <TableCell
                       align="right"
                       sx={{
@@ -467,6 +498,12 @@ export default function Customers() {
                     >
                       {user.dob.age}
                     </TableCell>
+
+                    {/*
+                      Actions Cell
+                      Contains the Edit button as per PRD section 3.1.4
+                      Clicking opens a modal for editing user information
+                    */}
                     <TableCell
                       align="center"
                       sx={{
@@ -474,13 +511,19 @@ export default function Customers() {
                         py: 2,
                       }}
                     >
+                      {/*
+                        Edit Button
+                        - Styled to match Figma design with rounded corners and subtle background
+                        - Includes aria-label for accessibility
+                        - Opens EditUserModal when clicked
+                      */}
                       <IconButton
                         onClick={() => handleEditUser(user)}
                         size="small"
                         aria-label={`Edit ${user.name.first} ${user.name.last}`}
                         sx={{
                           borderRadius: "8px",
-                          border: "1px solid #DADEE7",
+                          border: "1px solid #DADEE7", // Matches Figma design
                           backgroundColor: "rgba(245, 246, 250, 0.30)",
                           "&:hover": {
                             backgroundColor: "rgba(245, 246, 250, 0.50)",
