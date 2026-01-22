@@ -67,7 +67,22 @@ export default function Customers() {
   // Selected user state - stores the user currently being edited
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
 
-  // Fetch users on mount and when search query or page changes
+  /**
+   * Loads users from the API with pagination and search
+   *
+   * This function is memoized with useCallback to prevent unnecessary re-renders.
+   * It's called on component mount and whenever the search query changes.
+   *
+   * @param {number} currentPage - The page number to fetch (1-indexed)
+   * @param {boolean} append - If true, appends new users to existing list. If false, replaces the list.
+   * @returns {Promise<void>}
+   *
+   * Features:
+   * - Fetches 20 users per page as per PRD requirement
+   * - Supports search filtering by name, email, or city
+   * - Updates hasMore flag based on response length
+   * - Handles errors gracefully with error messages
+   */
   const loadUsers = React.useCallback(
     async (currentPage: number, append: boolean = false) => {
       setLoading(true);
@@ -75,67 +90,113 @@ export default function Customers() {
 
       try {
         console.log("Fetching users...", { currentPage, searchQuery });
+
+        // Call the Users API with pagination and search parameters
         const response = await fetchUsers({
           page: currentPage,
-          perPage: 20,
+          perPage: 20, // PRD requirement: show 20 users by default
           search: searchQuery,
         });
 
         console.log("Users fetched:", response);
 
+        // Either append to existing users (for "Load More") or replace the list (for new search)
         if (append) {
           setUsers((prev) => [...prev, ...response.data]);
         } else {
           setUsers(response.data);
         }
 
+        // Update total count for display
         setTotal(response.total);
+
+        // Determine if there are more users to load
+        // If we got less than 20 users, we've reached the end
         setHasMore(response.data.length === 20);
       } catch (err) {
         console.error("Error loading users:", err);
         setError(err instanceof Error ? err.message : "Failed to load users");
       } finally {
+        // Always clear loading state
         setLoading(false);
       }
     },
-    [searchQuery],
+    [searchQuery], // Re-create function when search query changes
   );
 
-  // Load initial data
+  /**
+   * Effect: Load initial users when component mounts or search query changes
+   *
+   * This effect runs whenever the loadUsers callback changes (which happens
+   * when the searchQuery changes). It always loads the first page and replaces
+   * the existing user list.
+   */
   React.useEffect(() => {
     console.log("Component mounted, loading users...");
     loadUsers(1, false);
   }, [loadUsers]);
 
-  // Handle search
+  /**
+   * Handles the search button click
+   *
+   * Updates the search query state with the current input value,
+   * which triggers a new API call via the useEffect. Also resets
+   * the page to 1 since we're starting a new search.
+   */
   const handleSearch = () => {
     setSearchQuery(searchInput);
     setPage(1);
   };
 
-  // Handle search on Enter key
+  /**
+   * Handles Enter key press in the search input
+   *
+   * Allows users to submit the search by pressing Enter instead
+   * of clicking the Search button, improving UX.
+   *
+   * @param {React.KeyboardEvent} e - Keyboard event
+   */
   const handleSearchKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
 
-  // Handle load more
+  /**
+   * Handles the "Load More" button click
+   *
+   * Increments the page number and loads the next batch of users,
+   * appending them to the existing list. This implements the
+   * pagination requirement from PRD section 3.1.2.
+   */
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    loadUsers(nextPage, true);
+    loadUsers(nextPage, true); // true = append to existing users
   };
 
-  // Handle edit user
+  /**
+   * Handles the edit button click for a user row
+   *
+   * Opens the edit modal and sets the selected user to be edited.
+   * This implements the edit functionality from PRD section 3.1.4.
+   *
+   * @param {User} user - The user object to edit
+   */
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
     setEditModalOpen(true);
   };
 
-  // Handle user updated
+  /**
+   * Callback invoked after a user is successfully updated
+   *
+   * Reloads the first page of users to reflect the changes and
+   * resets the page counter. This ensures the user sees the
+   * updated information immediately.
+   */
   const handleUserUpdated = () => {
-    // Reload current users
+    // Reload users from page 1 to see the updated data
     loadUsers(1, false);
     setPage(1);
   };
