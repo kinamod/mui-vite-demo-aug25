@@ -540,7 +540,15 @@ export default function Customers() {
           </Table>
         </TableContainer>
 
-        {/* Load More Button */}
+        {/*
+          Load More Button
+          Implements PRD section 3.1.2 pagination requirement
+          - Only shown when there are users loaded AND more users are available
+          - Loads the next 20 users when clicked
+          - Shows loading spinner during API call
+          - Disabled during loading to prevent duplicate requests
+          - Styled to match Figma design
+        */}
         {users.length > 0 && hasMore && (
           <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
             <Button
@@ -568,7 +576,12 @@ export default function Customers() {
           </Box>
         )}
 
-        {/* Total count */}
+        {/*
+          User Count Display
+          Shows the number of currently loaded users vs total users available
+          Helps users understand how much data they're viewing
+          Only shown when there's at least one user
+        */}
         {total > 0 && (
           <Box sx={{ px: 2, pb: 2, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
@@ -578,7 +591,15 @@ export default function Customers() {
         )}
       </Paper>
 
-      {/* Edit User Modal */}
+      {/*
+        Edit User Modal
+        Implements PRD section 3.1.4 edit functionality
+        - Modal for editing user information
+        - Opens when edit button is clicked on any user row
+        - Controlled by editModalOpen state
+        - Receives selectedUser as the user to edit
+        - Calls handleUserUpdated after successful update to refresh the table
+      */}
       <EditUserModal
         open={editModalOpen}
         onClose={() => setEditModalOpen(false)}
