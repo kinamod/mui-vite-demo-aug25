@@ -1,5 +1,22 @@
-// Users API Service
-// API Base URL from the custom rules documentation
+/**
+ * Users API Service
+ *
+ * This module provides functions for interacting with the Users API.
+ * The API provides CRUD operations for user management.
+ *
+ * API Documentation: https://user-api.builder-io.workers.dev/api
+ *
+ * Features:
+ * - Fetch users with pagination and search
+ * - Get individual user by ID/username/email
+ * - Update user information
+ * - Create new users
+ * - Delete users
+ *
+ * All functions include proper error handling and type safety.
+ */
+
+// API Base URL - hosted on Cloudflare Workers
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
 export interface UserLocation {
