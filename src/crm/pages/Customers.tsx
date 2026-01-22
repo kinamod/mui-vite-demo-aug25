@@ -18,18 +18,53 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { fetchUsers, User } from "../services/usersApi";
 import EditUserModal from "../components/EditUserModal";
 
+/**
+ * Customers Page Component
+ *
+ * Displays a searchable, paginated table of users fetched from the Users API.
+ * Implements the requirements from the Customer Dashboard Enhancement PRD.
+ *
+ * Key Features:
+ * - Displays 20 users per page by default (as per PRD section 3.1.2)
+ * - Search functionality for filtering users by name, email, or city (PRD section 3.1.3)
+ * - "Load More" button for pagination (PRD section 3.1.2)
+ * - Edit button in each row that opens a modal for user editing (PRD section 3.1.4)
+ * - Real-time loading states and error handling
+ * - Responsive design that works on mobile, tablet, and desktop
+ *
+ * @component
+ * @returns {JSX.Element} The Customers page with user table
+ */
 export default function Customers() {
+  // State for storing the list of users fetched from the API
   const [users, setUsers] = React.useState<User[]>([]);
+
+  // Loading state - true when fetching data from API
   const [loading, setLoading] = React.useState(true);
+
+  // Error state - stores error message if API call fails
   const [error, setError] = React.useState<string | null>(null);
+
+  // Search query state - the active search filter applied to the API
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  // Search input state - the current value in the search input field
+  // (separate from searchQuery to allow typing without triggering API calls)
   const [searchInput, setSearchInput] = React.useState("");
+
+  // Current page number for pagination
   const [page, setPage] = React.useState(1);
+
+  // Flag indicating if there are more users to load
   const [hasMore, setHasMore] = React.useState(true);
+
+  // Total count of users from the API
   const [total, setTotal] = React.useState(0);
 
-  // Modal state
+  // Edit modal state - controls visibility of the edit user modal
   const [editModalOpen, setEditModalOpen] = React.useState(false);
+
+  // Selected user state - stores the user currently being edited
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
 
   // Fetch users on mount and when search query or page changes
