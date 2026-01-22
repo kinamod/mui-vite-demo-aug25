@@ -201,9 +201,14 @@ export default function Customers() {
     setPage(1);
   };
 
+  // Render the customers page with user table
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
-      {/* Page Title */}
+      {/*
+        Page Title - "Customers"
+        Responsive font size: 1.5rem on mobile, 2rem on desktop
+        Implements PRD section 3.1.1 dashboard integration
+      */}
       <Typography
         variant="h4"
         component="h1"
@@ -216,7 +221,10 @@ export default function Customers() {
         Customers
       </Typography>
 
-      {/* Section Title */}
+      {/*
+        Section Title - "Users"
+        Indicates the Users dashboard as specified in PRD section 3.1.1
+      */}
       <Typography
         variant="h6"
         component="h2"
@@ -229,12 +237,24 @@ export default function Customers() {
         Users
       </Typography>
 
-      {/* Search Bar */}
+      {/*
+        Search Bar Section
+        Implements PRD section 3.1.3 search functionality
+        - Stacks vertically on mobile, horizontally on larger screens
+        - Search input with placeholder text as shown in Figma design
+        - Search button with Poppins font matching the design
+      */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={2}
         sx={{ mb: 3 }}
       >
+        {/*
+          Search Text Input
+          - Supports Enter key to submit (better UX)
+          - Updates searchInput state on change
+          - Max width of 400px on larger screens
+        */}
         <TextField
           placeholder="Search users by name, email, or city"
           value={searchInput}
@@ -249,6 +269,13 @@ export default function Customers() {
             },
           }}
         />
+
+        {/*
+          Search Button
+          - Uses Poppins font and specific styling from Figma design
+          - Black background with rounded corners
+          - Triggers search on click
+        */}
         <Button
           variant="contained"
           onClick={handleSearch}
@@ -266,7 +293,11 @@ export default function Customers() {
         </Button>
       </Stack>
 
-      {/* Error Alert */}
+      {/*
+        Error Alert
+        Displays error messages if API calls fail
+        Only shown when error state is not null
+      */}
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
