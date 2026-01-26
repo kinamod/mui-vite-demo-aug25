@@ -83,29 +83,49 @@ export default function EditUserModal({
     }
   }, [user, open]);
 
+  /**
+   * Handles the save operation for user updates
+   *
+   * This async function performs the following steps:
+   * 1. Validates that a user is selected
+   * 2. Constructs the update payload with modified fields
+   * 3. Calls the Users API to persist changes
+   * 4. Updates the local state with the new user data
+   * 5. Notifies the parent component of the successful save
+   * 6. Handles any errors that occur during the process
+   *
+   * @async
+   * @returns {Promise<void>}
+   */
   const handleSave = async () => {
+    // Guard clause: ensure a user is selected before attempting to save
     if (!user) return;
 
+    // Set loading state and clear any previous errors
     setLoading(true);
     setError(null);
 
     try {
+      // Construct the update payload
+      // Note: We preserve the user's title and other location data that aren't editable
       const updateData = {
         name: {
           first: firstName,
           last: lastName,
-          title: user.name.title,
+          title: user.name.title, // Preserve existing title
         },
         email,
         location: {
-          ...user.location,
-          city,
+          ...user.location, // Preserve all other location fields (coordinates, timezone, etc.)
+          city, // Only update the city field
         },
       };
 
+      // Call the Users API to persist the changes
       await updateUser(user.login.uuid, updateData);
 
-      // Update the user object with new values
+      // Construct the updated user object for local state management
+      // This ensures the UI updates immediately without needing to refetch
       const updatedUser: User = {
         ...user,
         name: updateData.name,
@@ -113,13 +133,19 @@ export default function EditUserModal({
         location: updateData.location,
       };
 
+      // Notify parent component of successful save
       onSave(updatedUser);
+
+      // Close the modal
       onClose();
     } catch (err) {
+      // Handle any errors that occur during the API call
+      // Display a user-friendly error message
       setError(
         err instanceof Error ? err.message : 'Failed to update user'
       );
     } finally {
+      // Always reset loading state, regardless of success or failure
       setLoading(false);
     }
   };
