@@ -151,12 +151,23 @@ export default function EditUserModal({
   };
 
   return (
+    // Material UI Dialog component with responsive sizing
+    // maxWidth="sm" provides a comfortable width for form inputs
+    // fullWidth ensures consistent sizing across different screen sizes
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Edit User</DialogTitle>
+
       <DialogContent>
+        {/* Stack component provides consistent vertical spacing between form fields */}
         <Stack spacing={2} sx={{ mt: 2 }}>
+          {/* Error Alert - only displayed when an error occurs during save */}
           {error && <Alert severity="error">{error}</Alert>}
 
+          {/* First Name Field
+              - Uses Helvetica font as specified in PRD requirements
+              - minWidth of 300px ensures most names display on a single line
+              - Disabled during loading to prevent user input during API calls
+          */}
           <TextField
             label="First Name"
             value={firstName}
@@ -166,12 +177,16 @@ export default function EditUserModal({
             disabled={loading}
             sx={{
               '& .MuiInputBase-input': {
-                fontFamily: 'Helvetica, Arial, sans-serif',
-                minWidth: '300px',
+                fontFamily: 'Helvetica, Arial, sans-serif', // PRD requirement
+                minWidth: '300px', // PRD requirement for typical name display
               },
             }}
           />
 
+          {/* Last Name Field
+              - Also uses Helvetica font for consistency
+              - Disabled during loading state
+          */}
           <TextField
             label="Last Name"
             value={lastName}
@@ -181,11 +196,15 @@ export default function EditUserModal({
             disabled={loading}
             sx={{
               '& .MuiInputBase-input': {
-                fontFamily: 'Helvetica, Arial, sans-serif',
+                fontFamily: 'Helvetica, Arial, sans-serif', // Consistent with first name
               },
             }}
           />
 
+          {/* Email Field
+              - type="email" provides browser-level validation
+              - Disabled during loading to prevent changes during save
+          */}
           <TextField
             label="Email"
             type="email"
@@ -196,6 +215,10 @@ export default function EditUserModal({
             disabled={loading}
           />
 
+          {/* City Field
+              - Allows editing of the user's city (other location fields preserved)
+              - Disabled during loading state
+          */}
           <TextField
             label="City"
             value={city}
@@ -206,10 +229,25 @@ export default function EditUserModal({
           />
         </Stack>
       </DialogContent>
+
+      {/* Dialog Actions - Contains Cancel and Save buttons */}
       <DialogActions>
+        {/* Cancel Button
+            - Closes the modal without saving
+            - Disabled during loading to prevent closing mid-save
+        */}
         <Button onClick={onClose} disabled={loading}>
           Cancel
         </Button>
+
+        {/* Save Button
+            - Triggers the save operation
+            - Disabled when:
+              1. Loading (API call in progress)
+              2. First name is empty (required field)
+              3. Last name is empty (required field)
+            - Shows "Saving..." text during API call for user feedback
+        */}
         <Button
           onClick={handleSave}
           variant="contained"
