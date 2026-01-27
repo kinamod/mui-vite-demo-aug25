@@ -43,23 +43,27 @@ export default function UsersTable({ onEditUser }: UsersTableProps) {
       });
 
       if (append) {
-        setUsers(prev => [...prev, ...response.data]);
+        setUsers(prev => {
+          const newUsers = [...prev, ...response.data];
+          setHasMore(newUsers.length < response.total);
+          return newUsers;
+        });
       } else {
         setUsers(response.data);
+        setHasMore(response.data.length < response.total);
       }
 
       setTotalUsers(response.total);
-      setHasMore(users.length + response.data.length < response.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch users");
     } finally {
       setLoading(false);
     }
-  }, [users.length]);
+  }, [perPage]);
 
   React.useEffect(() => {
     fetchUsers(1, searchQuery);
-  }, [searchQuery]);
+  }, [searchQuery, fetchUsers]);
 
   const handleSearch = () => {
     setCurrentPage(1);
