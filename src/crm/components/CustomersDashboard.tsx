@@ -1,3 +1,19 @@
+/**
+ * CustomersDashboard Component
+ *
+ * This component displays a searchable, paginated table of users from the Users API.
+ * It implements the requirements from the Customer Dashboard Enhancement PRD:
+ * - Displays 20 users per page
+ * - Searchable by name, email, or city
+ * - "Load More" pagination pattern (appends to existing results)
+ * - Edit functionality via modal dialog
+ *
+ * Design matches the Figma specifications with specific styling for:
+ * - Table layout with borders and spacing
+ * - Search input and "Look" button
+ * - Load More button styling
+ */
+
 import * as React from "react";
 import {
   Box,
@@ -20,14 +36,32 @@ import { listUsers, User } from "../../api/usersApi";
 import EditUserModal from "./EditUserModal";
 
 export default function CustomersDashboard() {
+  // State management for user data
+  // Stores the currently loaded users (accumulates on "Load More")
   const [users, setUsers] = React.useState<User[]>([]);
+
+  // Loading state to show spinner during API calls
   const [loading, setLoading] = React.useState(true);
+
+  // Error state for displaying API errors to the user
   const [error, setError] = React.useState<string | null>(null);
+
+  // Search query input value
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  // Current page for pagination (starts at 1)
   const [currentPage, setCurrentPage] = React.useState(1);
+
+  // Total number of users available from the API (for "Load More" logic)
   const [totalUsers, setTotalUsers] = React.useState(0);
+
+  // User currently being edited (null when modal is closed)
   const [editingUser, setEditingUser] = React.useState<User | null>(null);
+
+  // Modal open/close state
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  // Number of users to fetch per page (PRD requirement: 20 users)
   const perPage = 20;
 
   const fetchUsers = React.useCallback(async (page: number, search?: string) => {
