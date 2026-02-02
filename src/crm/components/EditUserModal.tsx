@@ -151,6 +151,10 @@ export default function EditUserModal({
   };
 
   return (
+    /* Modal dialog container
+       - maxWidth="sm" provides appropriate width for form
+       - fullWidth ensures consistent sizing
+       - 8px border radius for modern look */
     <Dialog
       open={open}
       onClose={onClose}
@@ -162,6 +166,9 @@ export default function EditUserModal({
         },
       }}
     >
+      {/* Modal title
+          - 20px font size with 600 weight
+          - Reduced bottom padding for compact header */}
       <DialogTitle
         sx={{
           fontWeight: 600,
@@ -171,12 +178,18 @@ export default function EditUserModal({
       >
         Edit User
       </DialogTitle>
+
       <DialogContent>
+        {/* Error alert - shown when API update fails */}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
+
+        {/* Form fields container
+            - Vertical layout with consistent spacing
+            - 16px gap between fields */}
         <Box
           sx={{
             display: "flex",
@@ -185,6 +198,10 @@ export default function EditUserModal({
             pt: 1,
           }}
         >
+          {/* First Name field
+              - IMPORTANT: Uses Helvetica font (PRD requirement 3.1.4)
+              - Minimum 300px width to accommodate most names
+              - Required field validation */}
           <TextField
             label="First Name"
             value={formData.firstName}
@@ -203,6 +220,11 @@ export default function EditUserModal({
               },
             }}
           />
+
+          {/* Last Name field
+              - IMPORTANT: Uses Helvetica font (PRD requirement 3.1.4)
+              - Minimum 300px width to accommodate most names
+              - Required field validation */}
           <TextField
             label="Last Name"
             value={formData.lastName}
@@ -221,6 +243,10 @@ export default function EditUserModal({
               },
             }}
           />
+
+          {/* Email field
+              - Type="email" provides browser validation
+              - Required field */}
           <TextField
             label="Email"
             type="email"
@@ -229,12 +255,16 @@ export default function EditUserModal({
             fullWidth
             required
           />
+
+          {/* City field - optional */}
           <TextField
             label="City"
             value={formData.city}
             onChange={handleChange("city")}
             fullWidth
           />
+
+          {/* Country field - optional */}
           <TextField
             label="Country"
             value={formData.country}
@@ -243,6 +273,11 @@ export default function EditUserModal({
           />
         </Box>
       </DialogContent>
+
+      {/* Action buttons
+          - Cancel: Closes modal without saving
+          - Save: Submits form and updates user
+          - Both disabled during loading to prevent multiple submissions */}
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button
           onClick={onClose}
@@ -265,6 +300,7 @@ export default function EditUserModal({
             },
           }}
         >
+          {/* Show spinner during save, otherwise "Save" text */}
           {loading ? <CircularProgress size={24} /> : "Save"}
         </Button>
       </DialogActions>
