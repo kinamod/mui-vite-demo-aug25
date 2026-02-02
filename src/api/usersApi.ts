@@ -140,27 +140,76 @@ export interface ListUsersParams {
   span?: string;
 }
 
+/**
+ * Fetches a paginated list of users from the API
+ *
+ * @param params - Optional parameters for pagination, search, and sorting
+ * @returns Promise resolving to UsersResponse with pagination metadata and user data
+ * @throws Error if the API request fails
+ *
+ * @example
+ * // Fetch first page with default settings (10 users)
+ * const response = await listUsers();
+ *
+ * @example
+ * // Fetch page 2 with 20 users, filtered by search
+ * const response = await listUsers({
+ *   page: 2,
+ *   perPage: 20,
+ *   search: 'john'
+ * });
+ *
+ * @example
+ * // Sort by age
+ * const response = await listUsers({
+ *   sortBy: 'dob.age'
+ * });
+ */
 export async function listUsers(params: ListUsersParams = {}): Promise<UsersResponse> {
+  // Build query string from parameters
+  // Only includes parameters that are provided (not undefined)
   const queryParams = new URLSearchParams();
-  
+
   if (params.page) queryParams.append('page', params.page.toString());
   if (params.perPage) queryParams.append('perPage', params.perPage.toString());
   if (params.search) queryParams.append('search', params.search);
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);
   if (params.span) queryParams.append('span', params.span);
 
+  // Make GET request to /users endpoint
   const response = await fetch(`${API_BASE_URL}/users?${queryParams.toString()}`);
-  
+
+  // Check for HTTP errors (4xx, 5xx status codes)
   if (!response.ok) {
     throw new Error(`Failed to fetch users: ${response.statusText}`);
   }
 
+  // Parse and return JSON response
   return response.json();
 }
 
+/**
+ * Fetches a single user by their UUID, username, or email
+ *
+ * @param id - User UUID, username, or email address
+ * @returns Promise resolving to the User object
+ * @throws Error if the user is not found or the request fails
+ *
+ * @example
+ * // Fetch by UUID
+ * const user = await getUser('test-uuid-1');
+ *
+ * @example
+ * // Fetch by username
+ * const user = await getUser('testuser1');
+ *
+ * @example
+ * // Fetch by email
+ * const user = await getUser('john.doe@example.com');
+ */
 export async function getUser(id: string): Promise<User> {
   const response = await fetch(`${API_BASE_URL}/users/${id}`);
-  
+
   if (!response.ok) {
     throw new Error(`Failed to fetch user: ${response.statusText}`);
   }
@@ -168,6 +217,37 @@ export async function getUser(id: string): Promise<User> {
   return response.json();
 }
 
+/**
+ * Updates an existing user's information
+ *
+ * Uses PUT method to update user fields. Only provided fields will be updated.
+ * The API preserves nested object structure, so you can update partial nested data.
+ *
+ * @param id - User UUID, username, or email to identify the user
+ * @param data - Partial user object with fields to update
+ * @returns Promise resolving to success response
+ * @throws Error if the update fails or user is not found
+ *
+ * @example
+ * // Update user's name
+ * await updateUser('user-uuid', {
+ *   name: {
+ *     first: 'Jane',
+ *     last: 'Doe',
+ *     title: 'Ms'
+ *   }
+ * });
+ *
+ * @example
+ * // Update email and city
+ * await updateUser('testuser1', {
+ *   email: 'newemail@example.com',
+ *   location: {
+ *     ...user.location,
+ *     city: 'New York'
+ *   }
+ * });
+ */
 export async function updateUser(id: string, data: Partial<User>): Promise<{ success: boolean; message: string }> {
   const response = await fetch(`${API_BASE_URL}/users/${id}`, {
     method: 'PUT',
@@ -184,6 +264,23 @@ export async function updateUser(id: string, data: Partial<User>): Promise<{ suc
   return response.json();
 }
 
+/**
+ * Deletes a user from the system
+ *
+ * @param id - User UUID, username, or email to identify the user
+ * @returns Promise resolving to success response
+ * @throws Error if the deletion fails or user is not found
+ *
+ * @example
+ * // Delete user by UUID
+ * await deleteUser('user-uuid');
+ *
+ * @example
+ * // Delete user by username
+ * await deleteUser('testuser1');
+ *
+ * WARNING: This operation cannot be undone. Use with caution.
+ */
 export async function deleteUser(id: string): Promise<{ success: boolean; message: string }> {
   const response = await fetch(`${API_BASE_URL}/users/${id}`, {
     method: 'DELETE',
