@@ -174,6 +174,7 @@ export default function CustomersDashboard() {
 
   return (
     <Box sx={{ width: "100%" }}>
+      {/* Main heading - matches Figma design typography */}
       <Typography
         variant="h4"
         component="h1"
@@ -187,6 +188,7 @@ export default function CustomersDashboard() {
         Customers
       </Typography>
 
+      {/* Subheading - matches Figma design typography */}
       <Typography
         variant="h5"
         component="h2"
@@ -200,6 +202,9 @@ export default function CustomersDashboard() {
         Users
       </Typography>
 
+      {/* Search input and button container
+          - Flexbox layout with gap for spacing
+          - Wraps on mobile for responsive behavior */}
       <Box
         sx={{
           display: "flex",
@@ -209,6 +214,10 @@ export default function CustomersDashboard() {
           flexWrap: "wrap",
         }}
       >
+        {/* Search input field
+            - 363px width on desktop (Figma spec)
+            - Full width on mobile
+            - Supports Enter key to trigger search */}
         <TextField
           placeholder="Search users by name, email, or city"
           value={searchQuery}
@@ -227,6 +236,10 @@ export default function CustomersDashboard() {
             },
           }}
         />
+
+        {/* Search button - "Look" text matches Figma design
+            - Custom dark color scheme (#05070A)
+            - 126px minimum width (Figma spec) */}
         <Button
           variant="contained"
           onClick={handleSearch}
@@ -248,6 +261,7 @@ export default function CustomersDashboard() {
         </Button>
       </Box>
 
+      {/* Error message display - shown when API calls fail */}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
