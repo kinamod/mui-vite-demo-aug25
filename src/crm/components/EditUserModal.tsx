@@ -1,3 +1,20 @@
+/**
+ * EditUserModal Component
+ *
+ * A modal dialog for editing user information.
+ * Implements PRD requirements:
+ * - Uses Helvetica font for name fields (as specified in PRD section 3.1.4)
+ * - Name input fields are wide enough for typical names (~300px minimum)
+ * - Provides editing capability for key user fields
+ * - Handles API updates and error states
+ *
+ * Props:
+ * @param open - Controls modal visibility
+ * @param user - The user object being edited
+ * @param onClose - Callback when modal is closed without saving
+ * @param onUserUpdated - Callback after successful user update
+ */
+
 import * as React from "react";
 import {
   Dialog,
@@ -12,10 +29,17 @@ import {
 } from "@mui/material";
 import { User, updateUser } from "../../api/usersApi";
 
+/**
+ * Props interface for EditUserModal component
+ */
 interface EditUserModalProps {
+  /** Controls whether the modal is visible */
   open: boolean;
+  /** The user object to edit */
   user: User;
+  /** Callback when user closes modal without saving */
   onClose: () => void;
+  /** Callback after successful user update (triggers data refresh) */
   onUserUpdated: () => void;
 }
 
@@ -25,6 +49,11 @@ export default function EditUserModal({
   onClose,
   onUserUpdated,
 }: EditUserModalProps) {
+  /**
+   * Form data state
+   * Stores the editable fields separately from the user object
+   * This allows us to track changes before submitting
+   */
   const [formData, setFormData] = React.useState({
     firstName: user.name.first,
     lastName: user.name.last,
@@ -32,9 +61,17 @@ export default function EditUserModal({
     city: user.location.city,
     country: user.location.country,
   });
+
+  /** Loading state during API update */
   const [loading, setLoading] = React.useState(false);
+
+  /** Error message state for displaying API errors */
   const [error, setError] = React.useState<string | null>(null);
 
+  /**
+   * Sync form data when user prop changes
+   * This ensures the form displays the correct data when editing different users
+   */
   React.useEffect(() => {
     if (user) {
       setFormData({
