@@ -268,6 +268,10 @@ export default function CustomersDashboard() {
         </Alert>
       )}
 
+      {/* User table container
+          - Light gray background (#F5F6FA) matches Figma
+          - No shadow for clean, flat design
+          - 8px border radius for rounded corners */}
       <TableContainer
         component={Paper}
         sx={{
@@ -277,6 +281,10 @@ export default function CustomersDashboard() {
         }}
       >
         <Table>
+          {/* Table header with column names
+              - Off-white background (#FCFCFC)
+              - 0.5px border matching Figma design
+              - Specific typography: 16px medium weight */}
           <TableHead>
             <TableRow
               sx={{
@@ -299,6 +307,7 @@ export default function CustomersDashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
+            {/* Loading state: Show spinner on initial load (no users yet) */}
             {loading && users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
@@ -306,6 +315,10 @@ export default function CustomersDashboard() {
                 </TableCell>
               </TableRow>
             ) : (
+              /* User rows: Map over users array to display each user
+                 - Uses uuid as unique key for React reconciliation
+                 - Hover effect for better UX
+                 - Consistent borders and spacing matching Figma */
               users.map((user) => (
                 <TableRow
                   key={user.login.uuid}
@@ -321,6 +334,7 @@ export default function CustomersDashboard() {
                     },
                   }}
                 >
+                  {/* Full name: Combines first and last name */}
                   <TableCell>
                     {user.name.first} {user.name.last}
                   </TableCell>
@@ -328,6 +342,10 @@ export default function CustomersDashboard() {
                   <TableCell>{user.location.city}</TableCell>
                   <TableCell>{user.location.country}</TableCell>
                   <TableCell>{user.dob.age}</TableCell>
+                  {/* Edit action button
+                      - Icon button with edit pencil icon
+                      - Opens modal for editing user details
+                      - Accessible with aria-label */}
                   <TableCell align="center">
                     <IconButton
                       onClick={() => handleEditClick(user)}
@@ -347,6 +365,13 @@ export default function CustomersDashboard() {
         </Table>
       </TableContainer>
 
+      {/* "Load More" button
+          - Only shown when there are more users to load (hasMore)
+          - Hidden during loading to prevent multiple requests
+          - Styling matches Figma design:
+            * Light background with border
+            * 8px border radius
+            * 500 font weight */}
       {hasMore && !loading && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <Button
@@ -373,12 +398,19 @@ export default function CustomersDashboard() {
         </Box>
       )}
 
+      {/* Loading indicator for "Load More" operation
+          - Shown when loading more users (users.length > 0)
+          - Smaller spinner (24px) for secondary loading state */}
       {loading && users.length > 0 && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <CircularProgress size={24} />
         </Box>
       )}
 
+      {/* Edit user modal
+          - Conditionally rendered when a user is selected for editing
+          - Modal component handles user updates via API
+          - onUserUpdated callback refreshes the table after save */}
       {editingUser && (
         <EditUserModal
           open={isModalOpen}
