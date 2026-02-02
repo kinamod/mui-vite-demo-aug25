@@ -84,6 +84,15 @@ export default function EditUserModal({
     }
   }, [user]);
 
+  /**
+   * Creates a change handler for a specific form field
+   * Uses currying pattern to create field-specific handlers
+   *
+   * @param field - The form field name to update
+   * @returns Event handler function for that field
+   *
+   * Usage: onChange={handleChange("firstName")}
+   */
   const handleChange = (field: keyof typeof formData) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -93,11 +102,26 @@ export default function EditUserModal({
     }));
   };
 
+  /**
+   * Handles form submission and user update
+   *
+   * Process:
+   * 1. Sets loading state and clears previous errors
+   * 2. Constructs update payload preserving nested structure
+   * 3. Calls updateUser API with user UUID
+   * 4. On success: Triggers onUserUpdated callback (closes modal and refreshes data)
+   * 5. On error: Displays error message to user
+   *
+   * Note: We preserve the full nested structure (name, location)
+   * to maintain data integrity with the API
+   */
   const handleSubmit = async () => {
     try {
       setLoading(true);
       setError(null);
 
+      // Construct the update payload with proper nested structure
+      // Preserves unchanged fields like title, coordinates, etc.
       const updateData: Partial<User> = {
         name: {
           ...user.name,
@@ -112,11 +136,16 @@ export default function EditUserModal({
         },
       };
 
+      // Call Users API to update user by UUID
       await updateUser(user.login.uuid, updateData);
+
+      // Notify parent component of successful update
       onUserUpdated();
     } catch (err) {
+      // Display user-friendly error message
       setError(err instanceof Error ? err.message : "Failed to update user");
     } finally {
+      // Always clear loading state
       setLoading(false);
     }
   };
