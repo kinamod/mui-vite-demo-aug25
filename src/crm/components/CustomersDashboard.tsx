@@ -64,61 +64,112 @@ export default function CustomersDashboard() {
   // Number of users to fetch per page (PRD requirement: 20 users)
   const perPage = 20;
 
+  /**
+   * Fetches users from the API with pagination and optional search
+   *
+   * @param page - The page number to fetch (1-indexed)
+   * @param search - Optional search query to filter results
+   *
+   * Behavior:
+   * - Page 1: Replaces the current user list (used for initial load and search)
+   * - Page > 1: Appends to existing user list (used for "Load More")
+   * - Updates totalUsers count for pagination logic
+   * - Handles loading and error states
+   *
+   * Uses useCallback to prevent unnecessary re-renders when passed as dependency
+   */
   const fetchUsers = React.useCallback(async (page: number, search?: string) => {
     try {
       setLoading(true);
       setError(null);
+
+      // Call the Users API with pagination and search parameters
       const response = await listUsers({
         page,
         perPage,
         search: search || undefined,
       });
-      
+
+      // First page: Replace entire list (new search or initial load)
+      // Subsequent pages: Append to existing list (Load More pattern)
       if (page === 1) {
         setUsers(response.data);
       } else {
         setUsers((prev) => [...prev, ...response.data]);
       }
-      
+
+      // Store total count for "Load More" button visibility logic
       setTotalUsers(response.total);
     } catch (err) {
+      // Display user-friendly error message
       setError(err instanceof Error ? err.message : "Failed to fetch users");
     } finally {
+      // Always stop loading indicator, even on error
       setLoading(false);
     }
   }, []);
 
+  /**
+   * Initial data load on component mount
+   * Fetches first page of users with no search filter
+   */
   React.useEffect(() => {
     fetchUsers(1);
   }, [fetchUsers]);
 
+  /**
+   * Handles search button click or Enter key press
+   * Resets to page 1 and fetches users matching the search query
+   */
   const handleSearch = () => {
     setCurrentPage(1);
     fetchUsers(1, searchQuery);
   };
 
+  /**
+   * Handles "Load More" button click
+   * Increments page number and appends next batch of users
+   */
   const handleLoadMore = () => {
     const nextPage = currentPage + 1;
     setCurrentPage(nextPage);
     fetchUsers(nextPage, searchQuery);
   };
 
+  /**
+   * Opens the edit modal for a specific user
+   * Sets the selected user and opens the modal dialog
+   *
+   * @param user - The user object to edit
+   */
   const handleEditClick = (user: User) => {
     setEditingUser(user);
     setIsModalOpen(true);
   };
 
+  /**
+   * Closes the edit modal and clears the selected user
+   */
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingUser(null);
   };
 
+  /**
+   * Callback after successful user update
+   * Refreshes the user list from page 1 (to show updated data)
+   * and closes the modal
+   */
   const handleUserUpdated = () => {
     setCurrentPage(1);
     fetchUsers(1, searchQuery);
     handleModalClose();
   };
 
+  /**
+   * Determines if "Load More" button should be shown
+   * True when there are more users available than currently loaded
+   */
   const hasMore = users.length < totalUsers;
 
   return (
