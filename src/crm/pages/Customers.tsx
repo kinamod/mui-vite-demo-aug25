@@ -267,7 +267,7 @@ export default function Customers() {
             },
           }}
         >
-          Look
+          Search
         </Button>
       </Box>
 
