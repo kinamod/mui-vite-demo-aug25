@@ -301,7 +301,7 @@ export default function Customers() {
             },
           }}
         >
-          Search
+          Find
         </Button>
       </Box>
 
