@@ -63,8 +63,8 @@ const TableRow = styled(Box)({
 });
 
 const SearchButton = styled(Button)({
-  background: "linear-gradient(0deg, #05070A 0%, #05070A 100%)",
-  backgroundColor: "#05070A",
+  background: "rgba(0, 42, 113, 1)",
+  backgroundColor: "rgba(0, 42, 113, 1)",
   border: "1px solid #333C4D",
   borderRadius: "8px",
   color: "#FFF",
@@ -76,7 +76,7 @@ const SearchButton = styled(Button)({
   height: "40px",
   padding: "0 24px",
   "&:hover": {
-    backgroundColor: "#0B0E14",
+    backgroundColor: "rgba(0, 42, 113, 0.9)",
   },
   boxShadow: "0 1px 0 #47536B, 0 -1px 0 #000",
 });
