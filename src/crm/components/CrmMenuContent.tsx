@@ -22,7 +22,6 @@ const mainListItems = [
   { text: "Customers", icon: <PeopleRoundedIcon />, path: "/customers" },
   { text: "Deals", icon: <BusinessCenterRoundedIcon />, path: "/deals" },
   { text: "Contacts", icon: <ContactsRoundedIcon />, path: "/contacts" },
-  { text: "Tasks", icon: <AssignmentRoundedIcon />, path: "/tasks" },
   { text: "Reports", icon: <AssessmentRoundedIcon />, path: "/reports" },
 ];
 
