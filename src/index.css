@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+.user-name-text {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.name-input-wide {
+  width: 320px;
+  max-width: 100%;
+}
